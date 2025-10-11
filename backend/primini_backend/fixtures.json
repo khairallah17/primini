@@ -1,0 +1,99 @@
+[
+  {
+    "model": "primini_backend.products.category",
+    "pk": 1,
+    "fields": {
+      "name": "Smartphones",
+      "slug": "smartphones",
+      "icon": "https://via.placeholder.com/64",
+      "parent": null
+    }
+  },
+  {
+    "model": "primini_backend.products.product",
+    "pk": 1,
+    "fields": {
+      "name": "Primini Phone X",
+      "slug": "primini-phone-x",
+      "description": "Un smartphone performant inspiré de Primini.",
+      "specs": {"stockage": "128 Go", "ram": "8 Go"},
+      "image": "https://via.placeholder.com/300",
+      "category": 1,
+      "brand": "Primini",
+      "release_date": "2023-01-01",
+      "tags": ["5g", "oled"],
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "primini_backend.products.merchant",
+    "pk": 1,
+    "fields": {
+      "name": "Primini Store",
+      "logo": "https://via.placeholder.com/120x60",
+      "website": "https://primini.ma",
+      "description": "Boutique officielle Primini",
+      "pay_status": true
+    }
+  },
+  {
+    "model": "primini_backend.products.priceoffer",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "merchant": 1,
+      "price": "5999.00",
+      "stock_status": "in_stock",
+      "url": "https://primini.ma/acheter",
+      "date_updated": "2023-01-02T00:00:00Z"
+    }
+  },
+  {
+    "model": "primini_backend.products.promotion",
+    "pk": 1,
+    "fields": {
+      "title": "Offres de lancement",
+      "description": "Profitez d'une réduction de lancement.",
+      "products": [1],
+      "start_date": "2023-01-01",
+      "end_date": "2023-03-01"
+    }
+  },
+  {
+    "model": "primini_backend.products.popularproduct",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "position": 1
+    }
+  },
+  {
+    "model": "primini_backend.pages.page",
+    "pk": 1,
+    "fields": {
+      "title": "À propos",
+      "slug": "about",
+      "body": "<p>Primini.ma compare les prix des meilleurs produits tech.</p>"
+    }
+  },
+  {
+    "model": "primini_backend.pages.page",
+    "pk": 2,
+    "fields": {
+      "title": "Conditions d’utilisation",
+      "slug": "terms",
+      "body": "<h2>Conditions</h2><p>Ces conditions sont fournies à titre d’exemple pour la démo.</p>"
+    }
+  },
+  {
+    "model": "primini_backend.pages.faqentry",
+    "pk": 1,
+    "fields": {
+      "section": "general",
+      "question": "Qu'est-ce que Primini ?",
+      "answer": "Primini est un comparateur de prix pour les produits tech au Maroc.",
+      "position": 1
+    }
+  }
+]
