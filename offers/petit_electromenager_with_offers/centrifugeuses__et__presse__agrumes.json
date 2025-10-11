@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Centrifugeuse UFESA Delux LC5750 / 1000 W / Noir",
+    "price": 789,
+    "offers": 4,
+    "url": "https://primini.ma/c/p/126193/Centrifugeuse-Ufesa-Delux-Lc5750-1000-W-Noir",
+    "image": "https://primini.ma/images/placeholder.jpg",
+    "offers_details": [
+      {
+        "store_name": "Electromall",
+        "store_url": "https://primini.ma/r/d/36/Electromall",
+        "store_rating": 0,
+        "product_title": "Centrifugeuse UFESA LC5750 INOX 1000W 1,5 L",
+        "price": 799,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/63d70b088c1041abdaa985fe?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  },
+  {
+    "name": "Centrifugeuse frutelia Pro MOULINEX 650W (JU450139) - Blanc",
+    "price": 849,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/10012/Centrifugeuse-Frutelia-Pro-Moulinex-650w-Ju450139-Blanc",
+    "image": "https://cdn.primini.ma/250_centrifugeuse-frutelia-pro-moulinex-650w-ju450139-blanc-1.webp",
+    "offers_details": [
+      {
+        "store_name": "Electromall",
+        "store_url": "https://primini.ma/r/d/36/Electromall",
+        "store_rating": 0,
+        "product_title": "Centrifugeuse MOULINEX JU450139 FRUTELIA NOIR",
+        "price": 849,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/63eb66dceefd02ebc21877a6?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  }
+]

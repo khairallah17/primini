@@ -20,6 +20,11 @@ type ProductListScreenProps = {
 
 type ApiResponse<T> = {
   count: number;
+  total_pages: number;
+  current_page: number;
+  next_page: number | null;
+  previous_page: number | null;
+  page_size: number;
   results: T[];
 };
 
@@ -29,6 +34,7 @@ export default function ProductListScreen({ title, endpoint, query }: ProductLis
   const [availableBrands, setAvailableBrands] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const queryKey = useMemo(() => JSON.stringify(query ?? {}), [query]);
@@ -58,6 +64,7 @@ export default function ProductListScreen({ title, endpoint, query }: ProductLis
           }))
         );
         setCount(response.data.count);
+        setTotalPages(response.data.total_pages || 1);
         if (response.headers['x-available-brands']) {
           setAvailableBrands(response.headers['x-available-brands'].split(','));
         } else {
@@ -82,8 +89,6 @@ export default function ProductListScreen({ title, endpoint, query }: ProductLis
   useEffect(() => {
     setPage(1);
   }, [filters, queryKey]);
-
-  const totalPages = Math.max(1, Math.ceil(count / 12));
 
   return (
     <div className="flex flex-col gap-8 lg:flex-row">

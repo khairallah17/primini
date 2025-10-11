@@ -12,8 +12,8 @@ export default function CategoriesScreen({ title }: { title?: string }) {
   useEffect(() => {
     async function load() {
       try {
-        const response = await api.get<Category[]>('/categories/');
-        setCategories(response.data);
+        const response = await api.get<{ results: Category[] }>('/categories/');
+        setCategories(response.data.results || []);
       } catch (error) {
         console.warn('Failed to load categories', error);
       } finally {

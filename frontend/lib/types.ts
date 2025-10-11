@@ -1,3 +1,13 @@
+export type PaginatedResponse<T> = {
+  count: number;
+  total_pages: number;
+  current_page: number;
+  next_page: number | null;
+  previous_page: number | null;
+  page_size: number;
+  results: T[];
+};
+
 export type Category = {
   id: number;
   name: string;

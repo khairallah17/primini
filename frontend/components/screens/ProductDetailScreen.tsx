@@ -9,8 +9,11 @@ import type { PriceOffer, Product } from '../../lib/types';
 import Carousel from '../Carousel';
 import ProductCard from '../ProductCard';
 
-function formatCurrency(value: number) {
-  return `${value.toFixed(2)} MAD`;
+function formatCurrency(value: number | string | undefined) {
+  if (value === undefined || value === null) return 'N/A';
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue)) return 'N/A';
+  return `${numValue.toFixed(2)} MAD`;
 }
 
 type ProductDetailScreenProps = {
@@ -26,6 +29,7 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [alertForm, setAlertForm] = useState<AlertForm>({ threshold: '', submitted: false });
+  const [imageError, setImageError] = useState(false);
   const { addFavorite, isFavorite, removeFavorite } = useFavorites();
   const { tokens } = useAuth();
 
@@ -114,11 +118,26 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
                 {favoriteActive ? 'Retirer' : 'Ajouter'}
               </button>
             </div>
-            {product.image && (
+            {product.image && !imageError ? (
               <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
-                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                <Image 
+                  src={product.image} 
+                  alt={product.name} 
+                  fill 
+                  className="object-contain" 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                  quality={95}
+                  priority={true}
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+                  onError={() => setImageError(true)}
+                />
               </div>
-            )}
+            ) : product.image ? (
+              <div className="relative mt-6 aspect-[4/3] flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200">
+                <span className="text-sm font-medium text-slate-400">Image non disponible</span>
+              </div>
+            ) : null}
             <p className="mt-6 text-sm leading-relaxed text-slate-600">{product.description}</p>
             {lowestPrice && (
               <p className="mt-8 text-2xl font-semibold text-primary">À partir de {formatCurrency(lowestPrice)}</p>

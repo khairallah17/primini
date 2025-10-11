@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Curasept ADS 350 30 ml",
+    "price": 74.25,
+    "offers": 3,
+    "url": "https://primini.ma/c/p/136519/Curasept-Ads-350-30-Ml",
+    "image": "https://cdn.primini.ma/250_8056746070274-curasept-ads-350-30-ml-1.webp",
+    "offers_details": [
+      {
+        "store_name": "COTEPARA",
+        "store_url": "https://primini.ma/r/d/66/Cotepara",
+        "store_rating": 0,
+        "product_title": "CURASEPT ADS 350 GEL GENGIVAL 30ML",
+        "price": 75,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/636babf04acbfdc924516ffc?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  },
+  {
+    "name": "Gel Cicatrisant Post-Opératoire 40ml Elugel Elgydium",
+    "price": 37.35,
+    "offers": 5,
+    "url": "https://primini.ma/c/p/135870/Gel-Cicatrisant-Post-Operatoire-40ml-Elugel-Elgydium",
+    "image": "https://cdn.primini.ma/250_3577056022722-gel-cicatrisant-post-operatoire-40ml-elugel-elgydium-1.webp",
+    "offers_details": [
+      {
+        "store_name": "New Era Parapharmacie",
+        "store_url": "https://primini.ma/r/d/138/New-Era-Parapharmacie",
+        "store_rating": 0,
+        "product_title": "ELUGEL gel buccal purifiant | 40 ml",
+        "price": 38,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/6636ce0aa70450179fc2a828?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  }
+]

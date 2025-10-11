@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: primini-backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - backend_static:/app/staticfiles
+    environment:
+      - DJANGO_DEBUG=true
+      - DJANGO_SECRET_KEY=dev-secret-key-change-in-production
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+    depends_on:
+      - db
+    networks:
+      - primini-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: primini-frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - primini-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: primini-db-dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=primini
+      - POSTGRES_USER=primini
+      - POSTGRES_PASSWORD=primini_dev_password
+    ports:
+      - "5432:5432"
+    networks:
+      - primini-network
+
+volumes:
+  postgres_data:
+  backend_static:
+
+networks:
+  primini-network:
+    driver: bridge
+

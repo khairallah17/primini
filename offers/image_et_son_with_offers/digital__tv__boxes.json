@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Box Android H96 MAX UHD 4K avec Abonnement 12 Mois IPTV + VOD",
+    "price": 449,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/60427/Box-Android-H96-Max-Uhd-4k-Avec-Abonnement-12-Mois-Iptv-Vod",
+    "image": "https://primini.ma/images/placeholder.jpg",
+    "offers_details": [],
+    "offers_count": 0
+  },
+  {
+    "name": "Box TV Android X96 Mate - 4K - 4Go de RAM - 64Go ROM - (x96-mate)",
+    "price": 449,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/57367/Box-Tv-Android-X96-Mate-4k-4go-De-Ram-64go-Rom-X96-Mate",
+    "image": "https://primini.ma/images/placeholder.jpg",
+    "offers_details": [
+      {
+        "store_name": "DARTILUX",
+        "store_url": "https://primini.ma/r/d/60/Dartilux",
+        "store_rating": 0,
+        "product_title": "Boîtier X96 Mate Android 10.0 Smart",
+        "price": 449,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/635dd794bee5e3fc277be971?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  }
+]

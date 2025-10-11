@@ -2,29 +2,26 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Carousel from '../../components/Carousel';
+import Image from 'next/image';
 import ProductCard, { ProductSummary } from '../../components/ProductCard';
 import api from '../../lib/apiClient';
-import type { Category, Promotion } from '../../lib/types';
+import type { Category } from '../../lib/types';
 
 export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [popular, setPopular] = useState<ProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [categoriesResponse, promotionsResponse, popularResponse] = await Promise.all([
-          api.get<Category[]>('/categories/'),
-          api.get<Promotion[]>('/promotions/'),
-          api.get<Array<{ id: number; product: ProductSummary }>>('/popular-products/')
+        const [categoriesResponse, popularResponse] = await Promise.all([
+          api.get<{ results: Category[] }>('/categories/'),
+          api.get<{ results: Array<{ id: number; product: ProductSummary }> }>('/popular-products/')
         ]);
-        setCategories(categoriesResponse.data.filter((category) => !category.parent));
-        setPromotions(promotionsResponse.data);
+        setCategories((categoriesResponse.data.results || []).filter((category) => !category.parent));
         setPopular(
-          popularResponse.data.map((item) => ({
+          (popularResponse.data.results || []).map((item) => ({
             ...item.product,
             lowestPrice: item.product.lowestPrice ?? item.product.lowest_price
           }))
@@ -63,49 +60,39 @@ export default function HomeScreen() {
       </section>
 
       <section>
-        <header className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-slate-800">Catégories populaires</h2>
+        <header className="mb-8">
+          <h2 className="text-3xl font-semibold text-slate-800">Parcourir par catégorie</h2>
+          <p className="mt-2 text-sm text-slate-500">Explorez nos catégories pour trouver les meilleurs produits</p>
         </header>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {loading && categories.length === 0 && <CategorySkeleton />}
           {categories.map((category) => (
             <Link
               key={category.slug}
               href={`/categories/${category.slug}`}
-              className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+              className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
             >
-              <p className="text-sm font-semibold text-primary">{category.name}</p>
-              <p className="mt-2 text-xs text-slate-500">Découvrez les meilleurs prix de la catégorie.</p>
+              {category.icon ? (
+                <div className="relative mb-4 h-16 w-16">
+                  <Image 
+                    src={category.icon} 
+                    alt={category.name}
+                    width={64}
+                    height={64}
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                  <span className="text-2xl font-bold text-primary">
+                    {category.name.charAt(0)}
+                  </span>
+                </div>
+              )}
+              <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
+                {category.name}
+              </h3>
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-slate-800">Promotions du moment</h2>
-        </div>
-        <div className="mt-6 space-y-10">
-          {promotions.map((promotion) => (
-            <div key={promotion.id} className="space-y-4">
-              <h3 className="text-lg font-semibold text-primary">{promotion.title}</h3>
-              <Carousel>
-                {promotion.products.map((product) => (
-                  <div key={product.id} className="min-w-[250px] snap-start">
-                    <ProductCard
-                      product={{
-                        id: product.id,
-                        name: product.name,
-                        slug: product.slug,
-                        image: product.image,
-                        lowestPrice: product.lowestPrice ?? product.lowest_price,
-                        description: product.description
-                      }}
-                    />
-                  </div>
-                ))}
-              </Carousel>
-            </div>
           ))}
         </div>
       </section>
@@ -131,8 +118,11 @@ export default function HomeScreen() {
 function CategorySkeleton() {
   return (
     <>
-      {Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="h-32 animate-pulse rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200" />
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index} className="flex h-40 animate-pulse flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 p-8">
+          <div className="mb-4 h-16 w-16 rounded-full bg-slate-300" />
+          <div className="h-4 w-24 rounded bg-slate-300" />
+        </div>
       ))}
     </>
   );

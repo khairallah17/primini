@@ -36,9 +36,31 @@ export default function FiltersSidebar({ availableBrands, filters, onChange }: F
     });
   };
 
+  const handleReset = () => {
+    onChange({
+      minPrice: undefined,
+      maxPrice: undefined,
+      brands: [],
+      ordering: filters.ordering // Keep the ordering when resetting
+    });
+  };
+
+  const hasActiveFilters = filters.minPrice !== undefined || filters.maxPrice !== undefined || filters.brands.length > 0;
+
   return (
     <aside className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-800">Filtres</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-slate-800">Filtres</h2>
+        {hasActiveFilters && (
+          <button
+            onClick={handleReset}
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            type="button"
+          >
+            Réinitialiser
+          </button>
+        )}
+      </div>
       <div className="space-y-4">
         <div>
           <label htmlFor="minPrice" className="text-xs font-semibold uppercase tracking-wide text-slate-500">

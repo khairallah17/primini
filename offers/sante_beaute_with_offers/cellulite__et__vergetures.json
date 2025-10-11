@@ -1,0 +1,78 @@
+[
+  {
+    "name": "Eveline Cosmetics Slim Extreme 250 ml",
+    "price": 69,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/156116/Eveline-Cosmetics-Slim-Extreme-250-Ml",
+    "image": "https://cdn.primini.ma/250_5901761939682-eveline-cosmetics-slim-extreme-250-ml-1.webp",
+    "offers_details": [],
+    "offers_count": 0
+  },
+  {
+    "name": "Guinot Slim Logic 125 ml",
+    "price": 487,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/153186/Guinot-Slim-Logic-125-Ml",
+    "image": "https://cdn.primini.ma/250_3500465705108-guinot-slim-logic-125-ml-1.webp",
+    "offers_details": [],
+    "offers_count": 0
+  },
+  {
+    "name": "Eveline Cosmetics Slim Extreme 4D Scalpel 250 ml",
+    "price": 69,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/143910/Eveline-Cosmetics-Slim-Extreme-4d-Scalpel-250-Ml",
+    "image": "https://cdn.primini.ma/250_5901761967708-eveline-cosmetics-slim-extreme-4d-scalpel-250-ml-1.webp",
+    "offers_details": [
+      {
+        "store_name": "COTEPARA",
+        "store_url": "https://primini.ma/r/d/66/Cotepara",
+        "store_rating": 0,
+        "product_title": "EVELINE 4D SCALPEL SERUM REDUCTEUR SUPER CONCENTRE 250ML",
+        "price": 83.16,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/66056a1c718ea6fd48acf56c?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  },
+  {
+    "name": "Eveline Cosmetics Slim Extreme 250 ml",
+    "price": 83.16,
+    "offers": 2,
+    "url": "https://primini.ma/c/p/141814/Eveline-Cosmetics-Slim-Extreme-250-Ml",
+    "image": "https://cdn.primini.ma/250_5907609316387-eveline-cosmetics-slim-extreme-250-ml-1.webp",
+    "offers_details": [
+      {
+        "store_name": "Newbab",
+        "store_url": "https://primini.ma/r/d/68/Newbab",
+        "store_rating": 0,
+        "product_title": "Eveline cosmetics slim extreme 4D thermo fat burner",
+        "price": 59,
+        "stock": null,
+        "last_update": "03/10/2025",
+        "offer_url": "https://primini.ma/gotostore/636ae8e7607b93efb4379375?clickarea=retailer&pagetype=product"
+      }
+    ],
+    "offers_count": 1
+  },
+  {
+    "name": "Morpho Fitness Sérum Activateur Minceur 100ml Minceur & Fermete Institut Esthederm",
+    "price": 493.68,
+    "offers": 4,
+    "url": "https://primini.ma/c/p/136252/Morpho-Fitness-Serum-Activateur-Minceur-100ml-Minceur-Fermete-Institut-Esthederm",
+    "image": "https://cdn.primini.ma/250_3461020014236-morpho-fitness-serum-activateur-minceur-100ml-minceur-amp-fermete-institut-esthederm-1.webp",
+    "offers_details": [],
+    "offers_count": 0
+  },
+  {
+    "name": "Intensive Glauscine Crème 200ml Minceur & Fermete Institut Esthederm",
+    "price": 434.61,
+    "offers": 3,
+    "url": "https://primini.ma/c/p/136242/Intensive-Glauscine-Creme-200ml-Minceur-Fermete-Institut-Esthederm",
+    "image": "https://cdn.primini.ma/250_3461020014304-intensive-glauscine-creme-200ml-minceur-amp-fermete-institut-esthederm-1.webp",
+    "offers_details": [],
+    "offers_count": 0
+  }
+]
