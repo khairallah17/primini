@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { FormEvent } from 'react';
 import ProductCard, { ProductSummary } from '../../components/ProductCard';
 import api from '../../lib/apiClient';
 import type { Category } from '../../lib/types';
@@ -11,6 +13,14 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [popular, setPopular] = useState<ProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!searchQuery.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  };
 
   useEffect(() => {
     async function load() {
@@ -46,6 +56,24 @@ export default function HomeScreen() {
           <p className="text-base text-white/80">
             Comparez instantanément les offres des marchands marocains et soyez alerté dès que les prix baissent.
           </p>
+          <form
+            onSubmit={handleSearchSubmit}
+            className="mt-8 flex flex-col gap-3 sm:flex-row"
+          >
+            <input
+              type="search"
+              className="flex-1 rounded-2xl border-0 bg-white/90 px-6 py-4 text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur focus:bg-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              placeholder="Rechercher un produit..."
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
+            <button
+              type="submit"
+              className="rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+            >
+              Rechercher
+            </button>
+          </form>
         </div>
         <div className="flex flex-col justify-end gap-4 text-sm text-white/80">
           <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">

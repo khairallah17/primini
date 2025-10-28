@@ -6,9 +6,9 @@ import Footer from '../components/Footer';
 import FavoriteBar from '../components/FavoriteBar';
 
 export const metadata: Metadata = {
-  title: 'Primini.ma — Comparateur de prix high-tech au Maroc',
+  title: 'Avita — Comparateur de prix high-tech au Maroc',
   description:
-    'Comparez les prix des smartphones, TV, électroménagers et produits high-tech au Maroc sur Primini.ma.'
+    'Comparez les prix des smartphones, TV, électroménagers et produits high-tech au Maroc sur Avita.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -13,6 +13,34 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'www.iris.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'iris.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.biougnach.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'biougnach.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.electroplanet.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'electroplanet.ma'
+      },
+      {
+        protocol: 'https',
+        hostname: 'websitephotosa.blob.core.windows.net'
+      },
+      {
+        protocol: 'https',
         hostname: 'via.placeholder.com'
       },
       {
