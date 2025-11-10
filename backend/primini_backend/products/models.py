@@ -46,6 +46,9 @@ class Product(models.Model):
     brand = models.CharField(max_length=120, blank=True)
     release_date = models.DateField(null=True, blank=True)
     tags = models.JSONField(default=list, blank=True)
+    source_category = models.CharField(max_length=150, blank=True)
+    raw_price_map = models.JSONField(default=dict, blank=True)
+    raw_url_map = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,8 +74,10 @@ class PriceOffer(models.Model):
     product = models.ForeignKey(Product, related_name='offers', on_delete=models.CASCADE)
     merchant = models.ForeignKey(Merchant, related_name='offers', on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=8, default='MAD')
+    raw_price_text = models.CharField(max_length=64, blank=True)
     stock_status = models.CharField(max_length=32, choices=STOCK_CHOICES, default='in_stock')
-    url = models.URLField()
+    url = models.URLField(blank=True)
     date_updated = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -101,17 +101,21 @@ class Command(BaseCommand):
             if created:
                 stats['categories'] += 1
             
-            # Create or get product
+            # Create or update product
             product_slug = slugify(name[:200])  # Limit slug length
-            product, created = Product.objects.get_or_create(
+            defaults = {
+                'name': name,
+                'category': category,
+                'brand': brand,
+                'image': data.get('image_url', ''),
+                'description': data.get('description', ''),
+                'source_category': data.get('category', ''),
+                'raw_price_map': data.get('price', {}) or {},
+                'raw_url_map': data.get('url', {}) or {},
+            }
+            product, created = Product.objects.update_or_create(
                 slug=product_slug,
-                defaults={
-                    'name': name,
-                    'category': category,
-                    'brand': brand,
-                    'image': data.get('image_url', ''),
-                    'description': data.get('description', ''),
-                }
+                defaults=defaults,
             )
             
             if created:
@@ -124,19 +128,48 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f'Error importing product {data.get("name", "unknown")}: {e}'))
 
     def import_offers_from_dict(self, product, data, stats):
-        """Import offers from price and url dictionaries"""
+        """
+        Import offers from price and url dictionaries.
         
-        prices = data.get('price', {})
-        urls = data.get('url', {})
+        Prices can be:
+        - String: "1 769,00 DH" (single price)
+        - Array: ["349,00  DH", "799,00  DH"] (multiple prices - we use the lowest)
+        
+        When multiple prices exist for the same merchant/product, we use the lowest
+        price (best deal) since PriceOffer has unique_together constraint on (product, merchant).
+        """
+        prices = data.get('price', {}) or {}
+        urls = data.get('url', {}) or {}
         
         # Get all merchant names from both dictionaries
         merchant_names = set(prices.keys()) | set(urls.keys())
         
         for merchant_name in merchant_names:
             try:
-                # Parse price - remove currency symbols and convert to float
-                price_str = prices.get(merchant_name, '0')
-                price = self.parse_price(price_str)
+                # Get price value - can be string or array
+                price_value = prices.get(merchant_name)
+                
+                # Handle both string and array prices
+                if price_value is None:
+                    continue
+                
+                raw_price_value = price_value
+                
+                # If price is an array, find the lowest price (best deal)
+                if isinstance(price_value, list):
+                    parsed_prices = []
+                    for price_str in price_value:
+                        parsed_price = self.parse_price(price_str)
+                        if parsed_price > 0:
+                            parsed_prices.append(parsed_price)
+                    
+                    if not parsed_prices:
+                        continue  # Skip if no valid prices in array
+                    
+                    price = min(parsed_prices)  # Use lowest price
+                else:
+                    # Price is a string
+                    price = self.parse_price(price_value)
                 
                 if price <= 0:
                     continue  # Skip invalid prices
@@ -156,14 +189,18 @@ class Command(BaseCommand):
                     stats['merchants'] += 1
                 
                 # Create or update offer
+                defaults = {
+                    'price': price,
+                    'stock_status': 'in_stock',  # Default to in stock
+                    'url': offer_url,
+                    'currency': self.detect_currency(raw_price_value),
+                    'raw_price_text': self.get_raw_price_text(raw_price_value),
+                }
+
                 offer, created = PriceOffer.objects.update_or_create(
                     product=product,
                     merchant=merchant,
-                    defaults={
-                        'price': price,
-                        'stock_status': 'in_stock',  # Default to in stock
-                        'url': offer_url,
-                    }
+                    defaults=defaults
                 )
                 
                 if created:
@@ -209,3 +246,22 @@ class Command(BaseCommand):
             return f"{parsed.scheme}://{parsed.netloc}"
         except:
             return ''
+
+    def detect_currency(self, price_value):
+        """Attempt to detect currency from raw price information."""
+        text = self.get_raw_price_text(price_value).upper()
+        if '€' in text or 'EUR' in text:
+            return 'EUR'
+        if 'USD' in text or '$' in text:
+            return 'USD'
+        if 'GBP' in text or '£' in text:
+            return 'GBP'
+        if 'MAD' in text or 'DH' in text:
+            return 'MAD'
+        return 'MAD'
+
+    def get_raw_price_text(self, price_value):
+        """Return a string representation of the raw price value."""
+        if isinstance(price_value, list):
+            return ', '.join(str(v) for v in price_value)
+        return str(price_value or '')

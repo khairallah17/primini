@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/khairallahmohammed/Documents/primini/merge_products_ai.py", line 13, in <module>
+    import openai
+ModuleNotFoundError: No module named 'openai'

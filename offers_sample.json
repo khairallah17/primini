@@ -1,0 +1,124 @@
+{
+  "products": [
+    {
+      "name": "Epson EB-Z9800W vidéo-projecteur Projecteur pour grandes salles 8300 ANSI lumens 3LCD WXGA (1280x800) Blanc",
+      "price": {
+        "Primini": "90 880,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946541273-epson-eb-z9800w-video-projecteur-projecteur-pour-grandes-salles-8300-ansi-lumens-3lcd-wxga-1280x800-blanc-1.webp",
+      "url": {
+        "Primini": "https://primini.ma/c/p/160675/Epson-Eb-Z9800w-Video-Projecteur-Projecteur-Pour-Grandes-Salles-8300-Ansi-Lumens-3lcd-Wxga-1280x800-Blanc"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Epson EB-L1300U",
+      "price": {
+        "Primini": "155 480,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946616742-epson-eb-l1300u-1.webp",
+      "url": {
+        "Primini": "https://primini.ma/c/p/160646/Epson-Eb-L1300u"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Epson EB-L615U",
+      "price": {
+        "Euro Marits": "29 040,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946661568-epson-eb-l615u-1.webp",
+      "url": {
+        "Euro Marits": "https://primini.ma/gotostore/655b8945bbb799cdbe7cf2a7?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Acer Value X1273 vidéo-projecteur Projecteur à focale standard 3000 ANSI lumens DLP XGA (1024x768) Noir",
+      "price": {
+        "Technoplace": "5 790,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_4713147085552-acer-value-x1273-video-projecteur-projecteur-a-focale-standard-3000-ansi-lumens-dlp-xga-1024x768-noir-1.webp",
+      "url": {
+        "Technoplace": "https://primini.ma/gotostore/65d925d2472ca713907e0a6e?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Epson EB-Z9800W vidéo-projecteur Projecteur pour grandes salles 8300 ANSI lumens 3LCD WXGA (1280x800) Blanc",
+      "price": {
+        "Primini": "90 880,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946541273-epson-eb-z9800w-video-projecteur-projecteur-pour-grandes-salles-8300-ansi-lumens-3lcd-wxga-1280x800-blanc-1.webp",
+      "url": {
+        "Primini": "https://primini.ma/c/p/160675/Epson-Eb-Z9800w-Video-Projecteur-Projecteur-Pour-Grandes-Salles-8300-Ansi-Lumens-3lcd-Wxga-1280x800-Blanc"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Epson EB-L1300U",
+      "price": {
+        "Primini": "155 480,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946616742-epson-eb-l1300u-1.webp",
+      "url": {
+        "Primini": "https://primini.ma/c/p/160646/Epson-Eb-L1300u"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Acer X113H vidéo-projecteur Projecteur à focale standard 2800 ANSI lumens DLP SVGA (800x600) Compatibilité 3D Noir",
+      "price": {
+        "Technoplace": "4 599,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_4713147279777-acer-x113h-video-projecteur-projecteur-a-focale-standard-2800-ansi-lumens-dlp-svga-800x600-compatibilite-3d-noir-1.webp",
+      "url": {
+        "Technoplace": "https://primini.ma/gotostore/65d925c9472ca713907dfb52?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Epson EB-L615U",
+      "price": {
+        "Euro Marits": "29 040,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_8715946661568-epson-eb-l615u-1.webp",
+      "url": {
+        "Euro Marits": "https://primini.ma/gotostore/655b8945bbb799cdbe7cf2a7?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Ricoh PJ X2440 vidéo-projecteur Projecteur à focale standard 3000 ANSI lumens DLP XGA (1024x768) Compatibilité 3D Blanc",
+      "price": {
+        "Electromall": "3 800,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_ricoh-pj-x2440-video-projecteur-projecteur-a-focale-standard-3000-ansi-lumens-dlp-xga-1024x768-compatibilite-3d-blanc-1.webp",
+      "url": {
+        "Electromall": "https://primini.ma/gotostore/6355db2ef5dfed72799c9e13?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    },
+    {
+      "name": "Ricoh PJ S2440 vidéo-projecteur Projecteur à focale standard 3000 ANSI lumens DLP SVGA (800x600) Compatibilité 3D Blanc",
+      "price": {
+        "Tera": "3 190,00 DH"
+      },
+      "image_url": "https://cdn.primini.ma/250_ricoh-pj-s2440-video-projecteur-projecteur-a-focale-standard-3000-ansi-lumens-dlp-svga-800x600-compatibilite-3d-blanc-1.webp",
+      "url": {
+        "Tera": "https://primini.ma/gotostore/636ae8eb607b93efb43798c2?clickarea=retailer&pagetype=product"
+      },
+      "description": "",
+      "category": "Image et son"
+    }
+  ]
+}

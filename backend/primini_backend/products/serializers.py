@@ -50,7 +50,7 @@ class PriceOfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PriceOffer
-        fields = ['id', 'product', 'merchant', 'price', 'stock_status', 'url', 'date_updated']
+        fields = ['id', 'product', 'merchant', 'price', 'currency', 'raw_price_text', 'stock_status', 'url', 'date_updated']
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -71,6 +71,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'brand',
             'release_date',
             'tags',
+            'source_category',
+            'raw_price_map',
+            'raw_url_map',
             'offers',
             'similar_products',
         ]

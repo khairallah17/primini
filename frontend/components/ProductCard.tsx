@@ -32,12 +32,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     <article className="flex h-full flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="flex flex-col gap-4">
         {product.image && !imageError ? (
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
             <Image 
               src={product.image} 
               alt={product.name} 
               fill 
-              className="object-cover transition-transform duration-300 hover:scale-105" 
+              className="object-contain transition-transform duration-300 hover:scale-105" 
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               quality={90}
               priority={false}

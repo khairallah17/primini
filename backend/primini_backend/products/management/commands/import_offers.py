@@ -139,15 +139,19 @@ class Command(BaseCommand):
             
             # Create or get product
             product_slug = slugify(name[:200])  # Limit slug length
-            product, created = Product.objects.get_or_create(
+            defaults = {
+                'name': name,
+                'category': category,
+                'brand': brand,
+                'image': data.get('image', ''),
+                'description': f"Prix à partir de {data.get('price', 0)} MAD",
+                'source_category': data.get('category_name', category.name if category else ''),
+                'raw_price_map': data.get('raw_price_map', {}) or {},
+                'raw_url_map': data.get('raw_url_map', {}) or {},
+            }
+            product, created = Product.objects.update_or_create(
                 slug=product_slug,
-                defaults={
-                    'name': name,
-                    'category': category,
-                    'brand': brand,
-                    'image': data.get('image', ''),
-                    'description': f"Prix à partir de {data.get('price', 0)} MAD",
-                }
+                defaults=defaults,
             )
             
             if created:
@@ -190,14 +194,18 @@ class Command(BaseCommand):
             price = float(offer_data.get('price', 0))
             offer_url = offer_data.get('offer_url', '')
             
+            defaults = {
+                'price': price,
+                'stock_status': stock_status,
+                'url': offer_url,
+                'currency': offer_data.get('currency', 'MAD'),
+                'raw_price_text': str(offer_data.get('price', '')),
+            }
+
             offer, created = PriceOffer.objects.update_or_create(
                 product=product,
                 merchant=merchant,
-                defaults={
-                    'price': price,
-                    'stock_status': stock_status,
-                    'url': offer_url,
-                }
+                defaults=defaults
             )
             
             if created:

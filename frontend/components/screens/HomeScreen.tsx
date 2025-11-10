@@ -25,17 +25,16 @@ export default function HomeScreen() {
   useEffect(() => {
     async function load() {
       try {
-        const [categoriesResponse, popularResponse] = await Promise.all([
+        const [categoriesResponse, productsResponse] = await Promise.all([
           api.get<{ results: Category[] }>('/categories/'),
-          api.get<{ results: Array<{ id: number; product: ProductSummary }> }>('/popular-products/')
+          api.get<{ results: ProductSummary[] }>('/products/?page_size=100')
         ]);
         setCategories((categoriesResponse.data.results || []).filter((category) => !category.parent));
-        setPopular(
-          (popularResponse.data.results || []).map((item) => ({
-            ...item.product,
-            lowestPrice: item.product.lowestPrice ?? item.product.lowest_price
-          }))
-        );
+        const products = (productsResponse.data.results || []).map((product) => ({
+          ...product,
+          lowestPrice: product.lowestPrice ?? product.lowest_price
+        }));
+        setPopular(getRandomSample(products, 20));
       } catch (error) {
         console.warn('Failed to load home data', error);
       } finally {
@@ -154,4 +153,16 @@ function CategorySkeleton() {
       ))}
     </>
   );
+}
+
+function getRandomSample<T>(items: T[], size: number): T[] {
+  if (items.length <= size) {
+    return items;
+  }
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, size);
 }
