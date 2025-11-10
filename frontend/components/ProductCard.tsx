@@ -59,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="mt-4 flex items-center justify-between">
         {numPrice !== null && !isNaN(numPrice) ? (
-          <p className="text-sm font-semibold text-primary">{numPrice.toFixed(2)} MAD</p>
+          <p className="text-sm font-semibold text-primary">{numPrice.toFixed(4)} MAD</p>
         ) : (
           <p className="text-sm text-slate-500">Prix en attente</p>
         )}

@@ -54,6 +54,10 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost'
+      },
+      {
+        protocol: 'https',
+        hostname: 'image.useinsider.com'
       }
     ],
     dangerouslyAllowSVG: true,
