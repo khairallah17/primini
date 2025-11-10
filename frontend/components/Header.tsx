@@ -35,26 +35,6 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        {loading ? (
-          <span className="hidden rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-500 md:block">
-            Chargement…
-          </span>
-        ) : user ? (
-          <button
-            onClick={logout}
-            className="hidden rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-white shadow-md md:block"
-            type="button"
-          >
-            Déconnexion
-          </button>
-        ) : (
-          <Link
-            href="/login"
-            className="hidden rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md md:block"
-          >
-            Connexion
-          </Link>
-        )}
       </div>
     </header>
   );

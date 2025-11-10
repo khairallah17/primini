@@ -13,7 +13,7 @@ function formatCurrency(value: number | string | undefined) {
   if (value === undefined || value === null) return 'N/A';
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(numValue)) return 'N/A';
-  return `${numValue.toFixed(2)} MAD`;
+  return `${numValue.toFixed(3)} MAD`;
 }
 
 type ProductDetailScreenProps = {
