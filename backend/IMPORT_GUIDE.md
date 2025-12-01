@@ -132,3 +132,82 @@ If you need to update the data:
 1. **Clear and re-import**: Use `--clear` flag to remove all existing data first
 2. **Incremental import**: Without `--clear`, only new products will be added
 3. **Update existing**: The command uses `get_or_create` and `update_or_create` to handle existing data appropriately
+
+## CSV Upload (API Method)
+
+### Prerequisites
+
+- Authenticated user (Admin or Client role)
+- Valid authentication token
+
+### Upload via API
+
+You can upload products via CSV file using the REST API endpoint:
+
+```bash
+curl -X POST http://localhost:8000/api/products/upload_csv/ \
+  -H "Authorization: Token YOUR_AUTH_TOKEN" \
+  -F "file=@products.csv"
+```
+
+### CSV Format
+
+The CSV file should have the following columns:
+
+| Column | Required | Description | Example |
+|--------|----------|-------------|---------|
+| `name` | Yes | Product name | iPhone 15 Pro |
+| `description` | No | Product description | Le dernier iPhone avec puce A17 Pro |
+| `brand` | No | Product brand | Apple |
+| `category` | No | Category name (will be created if doesn't exist) | Smartphones |
+| `image` | No | Image URL | https://example.com/image.jpg |
+| `price` | No | Price in MAD (will create PriceOffer) | 12999.00 |
+| `merchant` | No | Merchant name (required if price provided) | Electroplanet |
+| `url` | No | Product URL on merchant site | https://electroplanet.ma/product |
+| `tags` | No | Comma-separated tags | smartphone,apple,premium |
+
+### Example CSV
+
+See `product_upload_template.csv` for a complete example.
+
+### Approval Workflow
+
+- **Admin users**: Products are automatically approved upon upload
+- **Client users**: Products are created with `pending` status and require admin approval
+
+### Response Format
+
+```json
+{
+  "message": "Import terminé: 10 produits créés",
+  "success": 10,
+  "approved": 8,
+  "pending": 2,
+  "errors": [],
+  "total_errors": 0
+}
+```
+
+### Approval Endpoints
+
+**Approve/Reject Product (Admin only):**
+```bash
+POST /api/products/{slug}/approve/
+{
+  "action": "approve"  # or "reject"
+  "rejection_reason": "Optional reason for rejection"
+}
+```
+
+**List Pending Products (Admin only):**
+```bash
+GET /api/products/pending/
+```
+
+### Notes
+
+- Categories are automatically created if they don't exist
+- Merchants are automatically created if they don't exist
+- Price offers are created if both `price` and `merchant` are provided
+- Tags should be comma-separated
+- Price parsing handles currency symbols (DH, MAD) and commas

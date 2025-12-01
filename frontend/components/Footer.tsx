@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 const infoLinks = [
   { href: '/about', label: 'À propos' },
@@ -14,13 +18,29 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  
+  // Hide footer on admin pages and auth pages
+  if (pathname?.startsWith('/admin') || pathname === '/register' || pathname === '/login') {
+    return null;
+  }
+  
   return (
-    <footer className="mt-16 bg-slate-950 text-slate-300">
+    <footer className="bg-gray-900 text-gray-300">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-3">
         <div>
-          <h3 className="text-xl font-semibold text-white">Primini.ma</h3>
-          <p className="mt-4 text-sm leading-relaxed text-slate-400">
-            Primini.ma compare les prix des meilleurs marchands marocains pour vous aider à trouver les
+          <Link href="/" className="inline-block">
+            <Image
+              src="/images/avito-colors.jpeg"
+              alt="Avita"
+              width={120}
+              height={40}
+              className="h-10 w-auto object-contain mb-4"
+              priority
+            />
+          </Link>
+          <p className="mt-4 text-sm leading-relaxed text-gray-400">
+            Avita compare les prix des meilleurs marchands marocains pour vous aider à trouver les
             bons plans high-tech et électroménager.
           </p>
         </div>
@@ -29,7 +49,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {infoLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="transition-colors hover:text-secondary">
+                <Link href={link.href} className="transition-colors hover:text-primary">
                   {link.label}
                 </Link>
               </li>
@@ -41,7 +61,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {socialLinks.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="transition-colors hover:text-secondary">
+                <a href={link.href} className="transition-colors hover:text-primary">
                   {link.label}
                 </a>
               </li>
@@ -49,8 +69,8 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="bg-slate-900 py-6 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} Primini.ma — Tous droits réservés.
+      <div className="bg-gray-950 py-6 text-center text-xs text-gray-500">
+        © {new Date().getFullYear()} Avita — Tous droits réservés.
       </div>
     </footer>
   );

@@ -7,13 +7,20 @@ import { useRouter } from 'next/navigation';
 import { FormEvent } from 'react';
 import ProductCard, { ProductSummary } from '../../components/ProductCard';
 import api from '../../lib/apiClient';
-import type { Category } from '../../lib/types';
+import { getProductsWithDescription } from '../../lib/productApi';
+import { getAdSenseConfig, type AdSenseConfig } from '../../lib/settingsApi';
+import type { Category, Product } from '../../lib/types';
+import AdSense from '../../components/AdSense';
+import { getCategoryImage } from '../../lib/categoryImages';
 
 export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [popular, setPopular] = useState<ProductSummary[]>([]);
+  const [productsWithDesc, setProductsWithDesc] = useState<ProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDesc, setLoadingDesc] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [adsenseConfig, setAdsenseConfig] = useState<AdSenseConfig | null>(null);
   const router = useRouter();
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -44,10 +51,52 @@ export default function HomeScreen() {
     void load();
   }, []);
 
+  useEffect(() => {
+    async function loadProductsWithDescription() {
+      setLoadingDesc(true);
+      try {
+        const response = await getProductsWithDescription(50, 1, 100);
+        const products = (response.results || []).map((product) => ({
+          ...product,
+          lowestPrice: product.lowestPrice ?? product.lowest_price
+        }));
+        setProductsWithDesc(products);
+      } catch (error) {
+        console.warn('Failed to load products with descriptions', error);
+      } finally {
+        setLoadingDesc(false);
+      }
+    }
+    void loadProductsWithDescription();
+  }, []);
+
+  useEffect(() => {
+    async function loadAdSenseConfig() {
+      try {
+        const config = await getAdSenseConfig();
+        setAdsenseConfig(config);
+      } catch (error) {
+        console.warn('Failed to load AdSense config', error);
+      }
+    }
+    void loadAdSenseConfig();
+  }, []);
+
   return (
     <div className="space-y-16">
-      <section className="grid gap-10 rounded-3xl bg-gradient-to-br from-primary via-purple-500 to-secondary px-10 py-16 text-white shadow-xl md:grid-cols-[1.1fr,1fr]">
-        <div className="space-y-6">
+      <section className="relative grid gap-10 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-10 py-16 text-white shadow-xl md:grid-cols-[1.1fr,1fr]">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80)'
+          }}
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/60 via-primary/50 to-primary-dark/60" />
+        
+        {/* Content */}
+        <div className="relative z-10 space-y-6">
           <p className="text-sm uppercase tracking-wider text-white/60">Comparateur intelligent</p>
           <h1 className="text-4xl font-semibold leading-snug">
             Trouvez le meilleur prix pour vos produits high-tech préférés.
@@ -74,7 +123,7 @@ export default function HomeScreen() {
             </button>
           </form>
         </div>
-        <div className="flex flex-col justify-end gap-4 text-sm text-white/80">
+        <div className="relative z-10 flex flex-col justify-end gap-4 text-sm text-white/80">
           <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
             <h2 className="text-lg font-semibold text-white">Les chiffres clés</h2>
             <ul className="mt-4 space-y-3">
@@ -86,6 +135,10 @@ export default function HomeScreen() {
         </div>
       </section>
 
+      <div className="flex justify-center">
+        <AdSense slot={adsenseConfig?.homepage_top || ''} className="my-8" />
+      </div>
+
       <section>
         <header className="mb-8">
           <h2 className="text-3xl font-semibold text-slate-800">Parcourir par catégorie</h2>
@@ -93,43 +146,56 @@ export default function HomeScreen() {
         </header>
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {loading && categories.length === 0 && <CategorySkeleton />}
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/categories/${category.slug}`}
-              className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
-            >
-              {category.icon ? (
-                <div className="relative mb-4 h-16 w-16">
-                  <Image 
-                    src={category.icon} 
-                    alt={category.name}
-                    width={64}
-                    height={64}
-                    className="object-contain"
-                  />
-                </div>
-              ) : (
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
-                  <span className="text-2xl font-bold text-primary">
-                    {category.name.charAt(0)}
-                  </span>
-                </div>
-              )}
-              <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
-                {category.name}
-              </h3>
-            </Link>
-          ))}
+          {categories.map((category) => {
+            const categoryImage = getCategoryImage(category.name) || category.icon;
+            return (
+              <Link
+                key={category.slug}
+                href={`/categories/${category.slug}`}
+                className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
+              >
+                {categoryImage ? (
+                  <div className="relative mb-4 h-16 w-16">
+                    <Image 
+                      src={categoryImage} 
+                      alt={category.name}
+                      width={64}
+                      height={64}
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                    <span className="text-2xl font-bold text-primary">
+                      {category.name.charAt(0)}
+                    </span>
+                  </div>
+                )}
+                <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
+                  {category.name}
+                </h3>
+              </Link>
+            );
+          })}
         </div>
       </section>
+
+      <div className="flex justify-center">
+        <AdSense slot={adsenseConfig?.homepage_middle || ''} className="my-8" />
+      </div>
 
       <section>
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-slate-800">Produits populaires</h2>
         </div>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {popular.length > 0 ? (
+          {loadingDesc ? (
+            <p className="col-span-full rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
+              Chargement des produits...
+            </p>
+          ) : productsWithDesc.length > 0 ? (
+            productsWithDesc.slice(0, 12).map((product) => <ProductCard key={product.id} product={product} />)
+          ) : popular.length > 0 ? (
             popular.map((product) => <ProductCard key={product.id} product={product} />)
           ) : (
             <p className="col-span-full rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
@@ -138,6 +204,10 @@ export default function HomeScreen() {
           )}
         </div>
       </section>
+
+      <div className="flex justify-center">
+        <AdSense slot={adsenseConfig?.homepage_bottom || ''} className="my-8" />
+      </div>
     </div>
   );
 }

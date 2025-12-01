@@ -39,7 +39,7 @@ export default function CategoriesScreen({ title }: { title?: string }) {
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold text-slate-900">{title ?? 'Toutes les catégories'}</h1>
         <p className="text-sm text-slate-500">
-          Naviguez dans les univers Primini et trouvez des produits adaptés à vos besoins.
+          Naviguez dans les univers Avita et trouvez des produits adaptés à vos besoins.
         </p>
       </header>
       {loading ? (

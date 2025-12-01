@@ -7,7 +7,7 @@ const faqs = [
   {
     question: 'Puis-je devenir marchand partenaire ?',
     answer:
-      'Oui, écrivez-nous à partners@primini.ma et notre équipe vous répondra avec les modalités.'
+      'Oui, écrivez-nous à partners@avita.ma et notre équipe vous répondra avec les modalités.'
   }
 ];
 

@@ -58,6 +58,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'image.useinsider.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.mos.cms.futurecdn.net'
       }
     ],
     dangerouslyAllowSVG: true,

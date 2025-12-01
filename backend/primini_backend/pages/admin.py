@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FaqEntry, Page
+from .models import FaqEntry, Page, SiteSettings
 
 
 @admin.register(Page)
@@ -14,3 +14,10 @@ class FaqEntryAdmin(admin.ModelAdmin):
     list_display = ('question', 'section', 'position')
     list_filter = ('section',)
     ordering = ('section', 'position')
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('key', 'value', 'updated_at')
+    search_fields = ('key', 'value')
+    readonly_fields = ('updated_at',)

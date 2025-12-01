@@ -13,13 +13,13 @@
     "model": "primini_backend.products.product",
     "pk": 1,
     "fields": {
-      "name": "Primini Phone X",
-      "slug": "primini-phone-x",
-      "description": "Un smartphone performant inspiré de Primini.",
+      "name": "Avita Phone X",
+      "slug": "avita-phone-x",
+      "description": "Un smartphone performant inspiré d'Avita.",
       "specs": {"stockage": "128 Go", "ram": "8 Go"},
       "image": "https://via.placeholder.com/300",
       "category": 1,
-      "brand": "Primini",
+      "brand": "Avita",
       "release_date": "2023-01-01",
       "tags": ["5g", "oled"],
       "created_at": "2023-01-01T00:00:00Z",
@@ -30,10 +30,10 @@
     "model": "primini_backend.products.merchant",
     "pk": 1,
     "fields": {
-      "name": "Primini Store",
+      "name": "Avita Store",
       "logo": "https://via.placeholder.com/120x60",
-      "website": "https://primini.ma",
-      "description": "Boutique officielle Primini",
+      "website": "https://avita.ma",
+      "description": "Boutique officielle Avita",
       "pay_status": true
     }
   },
@@ -45,7 +45,7 @@
       "merchant": 1,
       "price": "5999.00",
       "stock_status": "in_stock",
-      "url": "https://primini.ma/acheter",
+      "url": "https://avita.ma/acheter",
       "date_updated": "2023-01-02T00:00:00Z"
     }
   },
@@ -74,7 +74,7 @@
     "fields": {
       "title": "À propos",
       "slug": "about",
-      "body": "<p>Primini.ma compare les prix des meilleurs produits tech.</p>"
+      "body": "<p>Avita compare les prix des meilleurs produits tech.</p>"
     }
   },
   {
@@ -91,8 +91,8 @@
     "pk": 1,
     "fields": {
       "section": "general",
-      "question": "Qu'est-ce que Primini ?",
-      "answer": "Primini est un comparateur de prix pour les produits tech au Maroc.",
+      "question": "Qu'est-ce qu'Avita ?",
+      "answer": "Avita est un comparateur de prix pour les produits tech au Maroc.",
       "position": 1
     }
   }

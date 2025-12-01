@@ -10,8 +10,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#6f42c1',
-        secondary: '#ff7849'
+        primary: '#0A3761', // Dark blue
+        secondary: '#FF6600', // Orange
+        'primary-dark': '#07284A', // Darker blue for hover states
+        'primary-light': '#E8F0F6', // Light blue for backgrounds (with opacity)
       }
     }
   },

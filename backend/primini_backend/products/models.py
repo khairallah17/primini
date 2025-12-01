@@ -37,6 +37,12 @@ class Merchant(models.Model):
 
 
 class Product(models.Model):
+    APPROVAL_STATUS_CHOICES = [
+        ('pending', 'En attente'),
+        ('approved', 'Approuvé'),
+        ('rejected', 'Rejeté'),
+    ]
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=210, unique=True, blank=True)
     description = models.TextField(blank=True)
@@ -51,6 +57,28 @@ class Product(models.Model):
     raw_url_map = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # Approval workflow fields
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS_CHOICES,
+        default='approved'  # Default to approved for backward compatibility
+    )
+    created_by = models.ForeignKey(
+        'users.User',
+        related_name='created_products',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    approved_by = models.ForeignKey(
+        'users.User',
+        related_name='approved_products',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True)
 
     class Meta:
         ordering = ['name']

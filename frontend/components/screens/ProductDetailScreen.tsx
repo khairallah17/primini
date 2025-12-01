@@ -2,12 +2,18 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/AuthContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import api from '../../lib/apiClient';
+import { alertSchema, type AlertFormData } from '../../lib/validations';
+import { getAdSenseConfig, type AdSenseConfig } from '../../lib/settingsApi';
 import type { PriceOffer, Product } from '../../lib/types';
 import Carousel from '../Carousel';
 import ProductCard from '../ProductCard';
+import AdSense from '../AdSense';
 
 function formatCurrency(value: number | string | undefined) {
   if (value === undefined || value === null) return 'N/A';
@@ -20,18 +26,28 @@ type ProductDetailScreenProps = {
   slug: string;
 };
 
-type AlertForm = {
-  threshold: string;
-  submitted: boolean;
-};
 
 export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [alertForm, setAlertForm] = useState<AlertForm>({ threshold: '', submitted: false });
+  const [submitted, setSubmitted] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [adsenseConfig, setAdsenseConfig] = useState<AdSenseConfig | null>(null);
+  const [offersExpanded, setOffersExpanded] = useState(false);
   const { addFavorite, isFavorite, removeFavorite } = useFavorites();
-  const { tokens } = useAuth();
+  const { tokens, user, isAdmin } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<AlertFormData>({
+    resolver: zodResolver(alertSchema),
+    defaultValues: {
+      threshold: '',
+    },
+  });
 
   useEffect(() => {
     async function load() {
@@ -47,9 +63,32 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
     void load();
   }, [slug]);
 
+  useEffect(() => {
+    async function loadAdSenseConfig() {
+      try {
+        const config = await getAdSenseConfig();
+        setAdsenseConfig(config);
+      } catch (error) {
+        console.warn('Failed to load AdSense config', error);
+      }
+    }
+    void loadAdSenseConfig();
+  }, []);
+
   const offers = useMemo(() => product?.offers ?? [], [product?.offers]);
   const lowestPrice = offers.length > 0 ? Math.min(...offers.map((offer) => offer.price)) : undefined;
   const favoriteActive = product ? isFavorite(product.id) : false;
+  const MAX_VISIBLE_OFFERS = 5;
+  const shouldCollapse = offers.length > MAX_VISIBLE_OFFERS;
+  const visibleOffers = shouldCollapse && !offersExpanded 
+    ? offers.slice(0, MAX_VISIBLE_OFFERS) 
+    : offers;
+  
+  // Check if user can edit this product
+  const canEdit = product && user && (
+    isAdmin || 
+    (product.created_by_email === user.email && product.approval_status !== 'approved')
+  );
 
   const toggleFavorite = () => {
     if (!product) return;
@@ -66,8 +105,8 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
     }
   };
 
-  const submitAlert = async () => {
-    if (!product || !alertForm.threshold || !tokens) return;
+  const submitAlert = async (data: AlertFormData) => {
+    if (!product || !tokens) return;
     try {
       const headers = tokens
         ? tokens.access
@@ -80,11 +119,13 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
         '/alerts/',
         {
           product: product.id,
-          threshold_price: Number(alertForm.threshold)
+          threshold_price: Number(data.threshold)
         },
         headers ? { headers } : undefined
       );
-      setAlertForm({ threshold: '', submitted: true });
+      reset();
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 3000);
     } catch (error) {
       console.warn('Failed to create alert', error);
     }
@@ -104,19 +145,46 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
         <div className="space-y-6">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-wide text-primary">{product.brand}</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm uppercase tracking-wide text-primary">{product.brand}</p>
+                  {product.approval_status === 'pending' && (
+                    <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800">
+                      En attente
+                    </span>
+                  )}
+                  {product.approval_status === 'rejected' && (
+                    <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">
+                      Rejeté
+                    </span>
+                  )}
+                </div>
                 <h1 className="mt-2 text-3xl font-semibold text-slate-900">{product.name}</h1>
+                {product.approval_status === 'rejected' && product.rejection_reason && (
+                  <p className="mt-2 text-sm text-red-600">
+                    Raison: {product.rejection_reason}
+                  </p>
+                )}
               </div>
-              <button
-                type="button"
-                onClick={toggleFavorite}
-                className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                  favoriteActive ? 'bg-secondary text-white' : 'bg-slate-200 text-slate-700'
-                }`}
-              >
-                {favoriteActive ? 'Retirer' : 'Ajouter'}
-              </button>
+              <div className="flex gap-2">
+                {canEdit && (
+                  <Link
+                    href={`/products/${product.slug}/edit`}
+                    className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                  >
+                    Modifier
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={toggleFavorite}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                    favoriteActive ? 'bg-secondary text-white' : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {favoriteActive ? 'Retirer' : 'Ajouter'}
+                </button>
+              </div>
             </div>
             {product.image && !imageError ? (
               <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">
@@ -152,46 +220,96 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
               </div>
             )}
           </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900">Caractéristiques</h2>
+            {product.description && (
+              <div className="mt-4">
+                <h3 className="mb-2 text-sm font-semibold text-slate-700">Description</h3>
+                <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-wrap">
+                  {product.description}
+                </p>
+              </div>
+            )}
+            {Object.keys(product.specs || {}).length > 0 && (
+              <div className={product.description ? 'mt-6' : 'mt-4'}>
+                <h3 className="mb-2 text-sm font-semibold text-slate-700">Spécifications techniques</h3>
+                <dl className="grid grid-cols-1 gap-3 text-sm">
+                  {Object.entries(product.specs || {}).map(([key, value]) => (
+                    <div key={key} className="flex justify-between rounded-2xl bg-slate-100 px-4 py-3">
+                      <dt className="font-medium text-slate-600">{key}</dt>
+                      <dd className="text-slate-900">{String(value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+            {!product.description && Object.keys(product.specs || {}).length === 0 && (
+              <p className="mt-4 text-sm text-slate-500">Aucune caractéristique disponible pour ce produit.</p>
+            )}
+          </div>
+
+          {adsenseConfig?.product_detail_sidebar && (
+            <div className="flex justify-center">
+              <AdSense slot={adsenseConfig.product_detail_sidebar} className="my-6" />
+            </div>
+          )}
 
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">Offres disponibles</h2>
             {offers.length > 0 ? (
-              <table className="mt-4 w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                    <th className="py-2">Marchand</th>
-                    <th>Prix</th>
-                    <th>Stock</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {offers.map((offer: PriceOffer) => (
-                    <tr key={offer.id} className="align-middle">
-                      <td className="py-3 font-medium text-slate-800">{offer.merchant.name}</td>
-                      <td className="py-3 font-semibold text-primary">{formatCurrency(offer.price)}</td>
-                      <td className="py-3 text-slate-500">{offer.stock_status}</td>
-                      <td className="py-3 text-right">
-                        <a
-                          href={offer.url}
-                          className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white"
-                        >
-                          Voir l&apos;offre
-                        </a>
-                      </td>
+              <>
+                <table className="mt-4 w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+                      <th className="py-2">Marchand</th>
+                      <th>Prix</th>
+                      <th>Stock</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {visibleOffers.map((offer: PriceOffer) => (
+                      <tr key={offer.id} className="align-middle">
+                        <td className="py-3 font-medium text-slate-800">{offer.merchant.name}</td>
+                        <td className="py-3 font-semibold text-primary">{formatCurrency(offer.price)}</td>
+                        <td className="py-3 text-slate-500">{offer.stock_status}</td>
+                        <td className="py-3 text-right">
+                          <a
+                            href={offer.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-primary-dark transition-colors"
+                          >
+                            Voir l&apos;offre
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {shouldCollapse && (
+                  <button
+                    onClick={() => setOffersExpanded(!offersExpanded)}
+                    className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    type="button"
+                  >
+                    {offersExpanded 
+                      ? `Afficher moins (${offers.length - MAX_VISIBLE_OFFERS} offres cachées)`
+                      : `Afficher toutes les offres (${offers.length - MAX_VISIBLE_OFFERS} de plus)`
+                    }
+                  </button>
+                )}
+              </>
             ) : (
               <p className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
                 Aucune offre n&apos;est disponible pour le moment. Revenez plus tard ou activez une alerte prix.
               </p>
             )}
           </div>
-        </div>
 
-        <div className="space-y-6">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">Créer une alerte prix</h2>
             <p className="mt-2 text-sm text-slate-500">
@@ -202,39 +320,33 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
                 Connectez-vous pour enregistrer vos alertes personnalisées.
               </p>
             )}
-            <div className="mt-4 space-y-3">
-              <input
-                type="number"
-                inputMode="numeric"
-                value={alertForm.threshold}
-                onChange={(event) => setAlertForm({ threshold: event.target.value, submitted: false })}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm"
-                placeholder="Prix souhaité"
-              />
+            <form onSubmit={handleSubmit(submitAlert)} className="mt-4 space-y-3">
+              <div>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  step="0.01"
+                  {...register('threshold')}
+                  className={`w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm ${
+                    errors.threshold ? 'border-red-500' : ''
+                  }`}
+                  placeholder="Prix souhaité"
+                />
+                {errors.threshold && (
+                  <p className="mt-1 text-xs text-red-600">{errors.threshold.message}</p>
+                )}
+              </div>
               <button
-                onClick={submitAlert}
-                type="button"
+                type="submit"
                 className="w-full rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
                 disabled={!tokens}
               >
                 Créer mon alerte
               </button>
-              {alertForm.submitted && (
+              {submitted && (
                 <p className="text-xs text-green-600">Alerte enregistrée !</p>
               )}
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900">Caractéristiques</h2>
-            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
-              {Object.entries(product.specs || {}).map(([key, value]) => (
-                <div key={key} className="flex justify-between rounded-2xl bg-slate-100 px-4 py-3">
-                  <dt className="font-medium text-slate-600">{key}</dt>
-                  <dd className="text-slate-900">{String(value)}</dd>
-                </div>
-              ))}
-            </dl>
+            </form>
           </div>
         </div>
       </section>
@@ -258,6 +370,12 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
             ))}
           </Carousel>
         </section>
+      )}
+
+      {adsenseConfig?.product_detail_bottom && (
+        <div className="flex justify-center">
+          <AdSense slot={adsenseConfig.product_detail_bottom} className="my-8" />
+        </div>
       )}
     </div>
   );

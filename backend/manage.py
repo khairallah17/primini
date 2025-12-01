@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import os
 import sys
+import warnings
+
+# Suppress deprecation warnings from dj_rest_auth
+warnings.filterwarnings('ignore', category=UserWarning, module='dj_rest_auth')
 
 
 def main():

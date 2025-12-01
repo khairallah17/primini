@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Contact — Primini.ma'
+  title: 'Contact — Avita'
 };
 
 export default function Page() {
@@ -11,7 +11,7 @@ export default function Page() {
         répondre dans les plus brefs délais.
       </p>
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm text-slate-600">Email : contact@primini.ma</p>
+        <p className="text-sm text-slate-600">Email : contact@avita.ma</p>
         <p className="text-sm text-slate-600">WhatsApp : +212 6 12 34 56 78</p>
       </div>
     </div>

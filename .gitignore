@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.sqlite3
 *.db
 /env/
 venv/
@@ -18,7 +17,6 @@ build/
 staticfiles/
 media/
 *.log
-db.sqlite3
 *.pot
 
 # Node

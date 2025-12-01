@@ -7,7 +7,7 @@ const sections = [
 ];
 
 export const metadata = {
-  title: 'FAQ — Primini.ma'
+  title: 'FAQ — Avita'
 };
 
 export default function Page() {

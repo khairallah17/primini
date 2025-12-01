@@ -1,0 +1,5 @@
+name,description,brand,category,image,price,merchant,url,tags
+iPhone 15 Pro,Le dernier iPhone avec puce A17 Pro,Apple,Smartphones,https://example.com/iphone15.jpg,12999.00,Electroplanet,https://electroplanet.ma/iphone15,smartphone,apple,premium
+Samsung Galaxy S24,Smartphone Android haut de gamme,Samsung,Smartphones,https://example.com/galaxy-s24.jpg,8999.00,Electroplanet,https://electroplanet.ma/galaxy-s24,smartphone,samsung,android
+MacBook Pro M3,Ordinateur portable professionnel,Apple,Ordinateurs,https://example.com/macbook.jpg,18999.00,Electroplanet,https://electroplanet.ma/macbook,ordinateur,apple,professionnel
+

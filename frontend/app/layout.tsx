@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Providers from './providers';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import FavoriteBar from '../components/FavoriteBar';
+import MainContent from '../components/layouts/MainContent';
+import ConditionalHeaderFooter from '../components/layouts/ConditionalHeaderFooter';
 
 export const metadata: Metadata = {
   title: 'Avita — Comparateur de prix high-tech au Maroc',
@@ -13,13 +12,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
-      <body className="bg-slate-50 text-slate-900">
+    <html lang="fr" className="h-full">
+      <body className="flex h-full flex-col bg-white text-gray-900">
         <Providers>
-          <Header />
-          <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
-          <Footer />
-          <FavoriteBar />
+          <ConditionalHeaderFooter>
+            <MainContent>{children}</MainContent>
+          </ConditionalHeaderFooter>
         </Providers>
       </body>
     </html>

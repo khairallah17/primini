@@ -46,6 +46,13 @@ export type Product = {
   release_date?: string;
   tags: string[];
   offers: PriceOffer[];
+  approval_status?: 'pending' | 'approved' | 'rejected';
+  created_by_email?: string;
+  approved_by_email?: string;
+  approved_at?: string;
+  rejection_reason?: string;
+  created_at?: string;
+  updated_at?: string;
   similar_products?: Array<{
     id: number;
     name: string;
