@@ -21,17 +21,38 @@ export type Merchant = {
   id: number;
   name: string;
   logo?: string;
+  logo_file?: string;
+  logo_display?: string; // Unified logo URL for display (prefers logo_file over logo)
   website_url?: string;
   description?: string;
 };
 
 export type PriceOffer = {
   id: number;
-  price: number;
+  price: number | string;
   stock_status: string;
   url: string;
   date_updated: string;
-  merchant: Merchant;
+  merchant?: Merchant;
+  product?: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+  currency?: string;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+  created_by_email?: string;
+  approved_by_email?: string;
+  approved_at?: string;
+  rejection_reason?: string;
+  merchant_name?: string;
+};
+
+export type ProductImage = {
+  id: number;
+  image: string;
+  image_url: string;
+  order: number;
 };
 
 export type Product = {
@@ -40,8 +61,12 @@ export type Product = {
   slug: string;
   description: string;
   image?: string;
+  image_file?: string;
+  image_display?: string;
+  images?: ProductImage[];
   specs: Record<string, string | number | boolean>;
   category: Category;
+  subcategory?: Category | null;
   brand?: string;
   release_date?: string;
   tags: string[];

@@ -112,7 +112,7 @@ export default function RegisterScreen() {
                   {isClient ? (
                     <>
                       <p className="text-sm text-white/90">
-                        Votre compte a été créé et est en attente d'approbation par un administrateur.
+                        Votre compte a été créé et est en attente d&apos;approbation par un administrateur.
                       </p>
                       <p className="text-sm text-white/80">
                         Un administrateur vous contactera dès que votre compte sera activé.
@@ -212,7 +212,7 @@ export default function RegisterScreen() {
                 <input
                   id="username"
                   type="text"
-                  {...activeForm.register('username')}
+                  {...(activeForm.register as any)('username')}
                   className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                     activeForm.formState.errors.username ? 'border-red-400' : ''
                   }`}
@@ -234,7 +234,7 @@ export default function RegisterScreen() {
                   <input
                     id="first_name"
                     type="text"
-                    {...activeForm.register('first_name')}
+                    {...(activeForm.register as any)('first_name')}
                     className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                       activeForm.formState.errors.first_name ? 'border-red-400' : ''
                     }`}
@@ -250,7 +250,7 @@ export default function RegisterScreen() {
                   <input
                     id="last_name"
                     type="text"
-                    {...activeForm.register('last_name')}
+                    {...(activeForm.register as any)('last_name')}
                     className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                       activeForm.formState.errors.last_name ? 'border-red-400' : ''
                     }`}
@@ -268,7 +268,7 @@ export default function RegisterScreen() {
                 <input
                   id="email"
                   type="email"
-                  {...activeForm.register('email')}
+                  {...(activeForm.register as any)('email')}
                   className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                     activeForm.formState.errors.email ? 'border-red-400' : ''
                   }`}
@@ -284,7 +284,7 @@ export default function RegisterScreen() {
                 <>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-white" htmlFor="enterprise_name">
-                      Nom de l'entreprise *
+                      Nom de l&apos;entreprise *
                     </label>
                     <input
                       id="enterprise_name"
@@ -344,7 +344,7 @@ export default function RegisterScreen() {
                 <input
                   id="password1"
                   type="password"
-                  {...activeForm.register('password1')}
+                  {...(activeForm.register as any)('password1')}
                   className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                     activeForm.formState.errors.password1 ? 'border-red-400' : ''
                   }`}
@@ -364,7 +364,7 @@ export default function RegisterScreen() {
                 <input
                   id="password2"
                   type="password"
-                  {...activeForm.register('password2')}
+                  {...(activeForm.register as any)('password2')}
                   className={`w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 ${
                     activeForm.formState.errors.password2 ? 'border-red-400' : ''
                   }`}

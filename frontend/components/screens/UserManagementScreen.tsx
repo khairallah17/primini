@@ -119,7 +119,7 @@ function UserManagementContent() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Gestion des utilisateurs</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Gérez les comptes utilisateurs, activez/désactivez les comptes et consultez l'historique des produits.
+            Gérez les comptes utilisateurs, activez/désactivez les comptes et consultez l&apos;historique des produits.
           </p>
         </div>
 

@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 
@@ -58,16 +59,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <aside
         className={`${
           sidebarOpen ? 'w-64' : 'w-20'
-        } fixed left-0 top-0 z-50 h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shadow-lg`}
+        } fixed left-0 top-0 z-50 h-screen bg-primary border-r border-primary-dark/30 transition-all duration-300 flex flex-col shadow-lg`}
       >
-        {/* Sidebar Header */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
-          {sidebarOpen && (
-            <h2 className="text-lg font-semibold text-gray-900">Administration</h2>
-          )}
+        {/* Logo Section */}
+        <div className="flex h-24 items-center justify-between border-b border-primary-dark/30 px-4">
+          <Link 
+            href="/" 
+            className={`flex items-center ${sidebarOpen ? 'justify-start' : 'justify-center'} flex-1`}
+          >
+            <Image
+              src="/images/avito-colors.jpeg"
+              alt="Avita"
+              width={sidebarOpen ? 180 : 50}
+              height={sidebarOpen ? 60 : 50}
+              className={`${sidebarOpen ? 'h-16 w-auto' : 'h-12 w-12'} object-contain transition-all`}
+              priority
+            />
+          </Link>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            className="rounded-md p-2 text-white/80 hover:bg-primary-dark/30 hover:text-white transition-colors"
             aria-label="Toggle sidebar"
           >
             {sidebarOpen ? (
@@ -90,7 +101,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 // Menu item with submenu
                 return (
                   <li key={index}>
-                    <div className={`flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 ${!sidebarOpen && 'justify-center'}`}>
+                    <div className={`flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/90 ${!sidebarOpen && 'justify-center'}`}>
                       <span className="text-lg">{item.icon}</span>
                       {sidebarOpen && <span>{item.title}</span>}
                     </div>
@@ -102,8 +113,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                               href={subItem.href}
                               className={`block rounded-md px-3 py-2 text-sm transition-colors ${
                                 isActive(subItem.href)
-                                  ? 'bg-primary/10 text-primary font-medium'
-                                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                  ? 'bg-white/20 text-white font-medium'
+                                  : 'text-white/70 hover:bg-white/10 hover:text-white'
                               }`}
                             >
                               {subItem.title}
@@ -122,8 +133,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     href={item.href}
                     className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                       isActive(item.href)
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'bg-white/20 text-white'
+                        : 'text-white/80 hover:bg-white/10 hover:text-white'
                     } ${!sidebarOpen && 'justify-center'}`}
                   >
                     <span className="text-lg">{item.icon}</span>
@@ -137,18 +148,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Sidebar Footer - User Info */}
         {sidebarOpen && user && (
-          <div className="border-t border-gray-200 p-4">
+          <div className="border-t border-primary-dark/30 p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white font-semibold">
                 {(user.first_name?.[0] || user.username?.[0] || user.email[0] || 'U').toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-medium text-gray-900">
+                <p className="truncate text-sm font-medium text-white">
                   {user.first_name && user.last_name
                     ? `${user.first_name} ${user.last_name}`
                     : user.username || user.email}
                 </p>
-                <p className="truncate text-xs text-gray-500">{user.email}</p>
+                <p className="truncate text-xs text-white/70">{user.email}</p>
               </div>
             </div>
           </div>

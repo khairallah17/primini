@@ -26,7 +26,7 @@ export default function Footer() {
   }
   
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-primary text-white">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 md:grid-cols-3">
         <div>
           <Link href="/" className="inline-block">
@@ -39,7 +39,7 @@ export default function Footer() {
               priority
             />
           </Link>
-          <p className="mt-4 text-sm leading-relaxed text-gray-400">
+          <p className="mt-4 text-sm leading-relaxed text-white/80">
             Avita compare les prix des meilleurs marchands marocains pour vous aider à trouver les
             bons plans high-tech et électroménager.
           </p>
@@ -49,7 +49,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {infoLinks.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} className="transition-colors hover:text-primary">
+                <Link href={link.href} className="transition-colors hover:text-secondary text-white/80">
                   {link.label}
                 </Link>
               </li>
@@ -61,7 +61,7 @@ export default function Footer() {
           <ul className="mt-4 space-y-2 text-sm">
             {socialLinks.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="transition-colors hover:text-primary">
+                <a href={link.href} className="transition-colors hover:text-secondary text-white/80">
                   {link.label}
                 </a>
               </li>
@@ -69,7 +69,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="bg-gray-950 py-6 text-center text-xs text-gray-500">
+      <div className="bg-primary-dark py-6 text-center text-xs text-white/60">
         © {new Date().getFullYear()} Avita — Tous droits réservés.
       </div>
     </footer>

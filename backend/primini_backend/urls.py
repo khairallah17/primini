@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework import routers
 
 from primini_backend.products import views as product_views
@@ -30,3 +32,11 @@ urlpatterns = [
     path('api/auth/password/reset/verify/', user_views.password_reset_verify_otp, name='password_reset_verify'),
     path('api/auth/password/reset/', user_views.password_reset, name='password_reset'),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,13 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getAdSenseConfig, updateAdSenseConfig, type AdSenseConfig } from '../../lib/settingsApi';
+import { getAdSenseConfig, updateAdSenseConfig, uploadBannerImage, type AdSenseConfig, type AdSlotConfig } from '../../lib/settingsApi';
+
+type SlotKey = 'homepage_top' | 'homepage_middle' | 'homepage_bottom' | 'product_detail_sidebar' | 'product_detail_bottom' | 'category_page_top' | 'search_results_middle';
+
+const SLOT_LABELS: Record<SlotKey, string> = {
+  homepage_top: 'Page d\'accueil - Haut',
+  homepage_middle: 'Page d\'accueil - Milieu',
+  homepage_bottom: 'Page d\'accueil - Bas',
+  product_detail_sidebar: 'Page produit - Barre latérale',
+  product_detail_bottom: 'Page produit - Bas',
+  category_page_top: 'Page catégorie - Haut',
+  search_results_middle: 'Résultats de recherche - Milieu',
+};
+
+function normalizeSlotConfig(value: string | AdSlotConfig | undefined): AdSlotConfig {
+  if (!value) {
+    return { ad_type: 'adsense', adsense_id: '', banner_image: '', banner_link: '' };
+  }
+  
+  if (typeof value === 'string') {
+    // Legacy: simple string is AdSense ID
+    return { ad_type: 'adsense', adsense_id: value, banner_image: '', banner_link: '' };
+  }
+  
+  // Already an AdSlotConfig object
+  return {
+    ad_type: value.ad_type || 'adsense',
+    adsense_id: value.adsense_id || '',
+    banner_image: value.banner_image || '',
+    banner_link: value.banner_link || '',
+  };
+}
 
 function AdSenseSettingsContent() {
   const { tokens } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [config, setConfig] = useState<AdSenseConfig>({
     enabled: false,
     publisher_id: '',
@@ -62,6 +95,22 @@ function AdSenseSettingsContent() {
     setConfig(prev => ({ ...prev, [field]: value }));
   };
 
+  const updateSlotConfig = (slotKey: SlotKey, updates: Partial<AdSlotConfig>) => {
+    const currentValue = config[slotKey];
+    const currentConfig = normalizeSlotConfig(currentValue);
+    const newConfig: AdSlotConfig = { ...currentConfig, ...updates };
+    
+    // If it's a simple AdSense ID (legacy), convert to object format
+    setConfig(prev => ({
+      ...prev,
+      [slotKey]: newConfig,
+    }));
+  };
+
+  const getSlotConfig = (slotKey: SlotKey): AdSlotConfig => {
+    return normalizeSlotConfig(config[slotKey]);
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center py-20">Chargement...</div>;
   }
@@ -106,7 +155,7 @@ function AdSenseSettingsContent() {
               className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
             />
             <p className="mt-1 text-xs text-gray-500">
-              Trouvez votre Publisher ID dans votre compte Google AdSense
+              Trouvez votre Publisher ID dans votre compte Google AdSense (requis pour les publicités AdSense)
             </p>
           </div>
 
@@ -114,100 +163,188 @@ function AdSenseSettingsContent() {
           <div className="border-t pt-6">
             <h2 className="mb-4 text-xl font-semibold text-gray-900">Emplacements des publicités</h2>
             <p className="mb-6 text-sm text-gray-500">
-              Configurez les emplacements de publicités. Laissez vide pour désactiver un emplacement.
+              Pour chaque emplacement, vous pouvez choisir entre une publicité AdSense ou une bannière image personnalisée.
             </p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page d'accueil - Haut
-                </label>
-                <input
-                  type="text"
-                  value={config.homepage_top || ''}
-                  onChange={(e) => handleChange('homepage_top', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
+            <div className="space-y-8">
+              {(Object.keys(SLOT_LABELS) as SlotKey[]).map((slotKey) => {
+                const slotConfig = getSlotConfig(slotKey);
+                return (
+                  <div key={slotKey} className="rounded-lg border border-gray-200 p-6">
+                    <h3 className="mb-4 text-lg font-medium text-gray-900">
+                      {SLOT_LABELS[slotKey]}
+                    </h3>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page d'accueil - Milieu
-                </label>
-                <input
-                  type="text"
-                  value={config.homepage_middle || ''}
-                  onChange={(e) => handleChange('homepage_middle', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
+                    {/* Ad Type Selection */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Type de publicité
+                      </label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name={`${slotKey}_type`}
+                            value="adsense"
+                            checked={slotConfig.ad_type === 'adsense'}
+                            onChange={(e) => updateSlotConfig(slotKey, { ad_type: 'adsense' })}
+                            className="mr-2 h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                          />
+                          <span className="text-sm text-gray-700">AdSense ID</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            name={`${slotKey}_type`}
+                            value="banner"
+                            checked={slotConfig.ad_type === 'banner'}
+                            onChange={(e) => updateSlotConfig(slotKey, { ad_type: 'banner' })}
+                            className="mr-2 h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                          />
+                          <span className="text-sm text-gray-700">Bannière Image</span>
+                        </label>
+                      </div>
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page d'accueil - Bas
-                </label>
-                <input
-                  type="text"
-                  value={config.homepage_bottom || ''}
-                  onChange={(e) => handleChange('homepage_bottom', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
+                    {/* AdSense ID Input */}
+                    {slotConfig.ad_type === 'adsense' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          AdSense Slot ID
+                        </label>
+                        <input
+                          type="text"
+                          value={slotConfig.adsense_id || ''}
+                          onChange={(e) => updateSlotConfig(slotKey, { adsense_id: e.target.value })}
+                          placeholder="ID du slot publicitaire (ex: 1234567890)"
+                          className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          Laissez vide pour désactiver cet emplacement
+                        </p>
+                      </div>
+                    )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page produit - Barre latérale
-                </label>
-                <input
-                  type="text"
-                  value={config.product_detail_sidebar || ''}
-                  onChange={(e) => handleChange('product_detail_sidebar', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
+                    {/* Banner Image Input */}
+                    {slotConfig.ad_type === 'banner' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Image de la bannière
+                          </label>
+                          <div className="flex gap-4">
+                            <div className="flex-1">
+                              <input
+                                ref={(el) => {
+                                  fileInputRefs.current[slotKey] = el;
+                                }}
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file || !tokens?.key) return;
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page produit - Bas
-                </label>
-                <input
-                  type="text"
-                  value={config.product_detail_bottom || ''}
-                  onChange={(e) => handleChange('product_detail_bottom', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Page catégorie - Haut
-                </label>
-                <input
-                  type="text"
-                  value={config.category_page_top || ''}
-                  onChange={(e) => handleChange('category_page_top', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Résultats de recherche - Milieu
-                </label>
-                <input
-                  type="text"
-                  value={config.search_results_middle || ''}
-                  onChange={(e) => handleChange('search_results_middle', e.target.value)}
-                  placeholder="ID du slot publicitaire"
-                  className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
-                />
-              </div>
+                                  setUploading(prev => ({ ...prev, [slotKey]: true }));
+                                  try {
+                                    const result = await uploadBannerImage(file, slotKey, tokens.key);
+                                    updateSlotConfig(slotKey, { banner_image: result.url });
+                                    setMessage({ type: 'success', text: 'Image téléchargée avec succès!' });
+                                  } catch (error: any) {
+                                    setMessage({
+                                      type: 'error',
+                                      text: error.response?.data?.detail || 'Erreur lors du téléchargement de l\'image'
+                                    });
+                                  } finally {
+                                    setUploading(prev => ({ ...prev, [slotKey]: false }));
+                                  }
+                                }}
+                                className="hidden"
+                                id={`file-input-${slotKey}`}
+                              />
+                              <label
+                                htmlFor={`file-input-${slotKey}`}
+                                className="flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                {uploading[slotKey] ? 'Téléchargement...' : 'Choisir un fichier'}
+                              </label>
+                            </div>
+                            {slotConfig.banner_image && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  updateSlotConfig(slotKey, { banner_image: '' });
+                                  if (fileInputRefs.current[slotKey]) {
+                                    fileInputRefs.current[slotKey]!.value = '';
+                                  }
+                                }}
+                                className="rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+                              >
+                                Supprimer
+                              </button>
+                            )}
+                          </div>
+                          <p className="mt-1 text-xs text-gray-500">
+                            Formats acceptés: JPEG, PNG, GIF, WebP (max 5MB)
+                          </p>
+                          {slotConfig.banner_image && (
+                            <p className="mt-1 text-xs text-blue-600">
+                              Image actuelle: {slotConfig.banner_image}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Lien de destination (optionnel)
+                          </label>
+                          <input
+                            type="url"
+                            value={slotConfig.banner_link || ''}
+                            onChange={(e) => updateSlotConfig(slotKey, { banner_link: e.target.value })}
+                            placeholder="https://example.com"
+                            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
+                          />
+                          <p className="mt-1 text-xs text-gray-500">
+                            URL vers laquelle rediriger lorsque l&apos;utilisateur clique sur la bannière
+                          </p>
+                        </div>
+                        {slotConfig.banner_image && (
+                          <div className="mt-4">
+                            <p className="mb-2 text-sm font-medium text-gray-700">Aperçu:</p>
+                            <div className="border border-gray-200 rounded-md p-4 bg-gray-50">
+                              {slotConfig.banner_link ? (
+                                <a
+                                  href={slotConfig.banner_link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  <img
+                                    src={slotConfig.banner_image}
+                                    alt="Banner preview"
+                                    className="max-w-full h-auto"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                </a>
+                              ) : (
+                                <img
+                                  src={slotConfig.banner_image}
+                                  alt="Banner preview"
+                                  className="max-w-full h-auto"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -229,4 +366,3 @@ function AdSenseSettingsContent() {
 export default function AdSenseSettingsScreen() {
   return <AdSenseSettingsContent />;
 }
-

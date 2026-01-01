@@ -9,9 +9,11 @@ import ProductCard, { ProductSummary } from '../../components/ProductCard';
 import api from '../../lib/apiClient';
 import { getProductsWithDescription } from '../../lib/productApi';
 import { getAdSenseConfig, type AdSenseConfig } from '../../lib/settingsApi';
+import { getParentCategories } from '../../lib/categoryApi';
 import type { Category, Product } from '../../lib/types';
 import AdSense from '../../components/AdSense';
 import { getCategoryImage } from '../../lib/categoryImages';
+import HomeLoader from '../HomeLoader';
 
 export default function HomeScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -21,7 +23,17 @@ export default function HomeScreen() {
   const [loadingDesc, setLoadingDesc] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [adsenseConfig, setAdsenseConfig] = useState<AdSenseConfig | null>(null);
+  const [showLoader, setShowLoader] = useState(false);
   const router = useRouter();
+
+  // Check if this is the first visit
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('hasVisitedHome');
+    if (!hasVisited) {
+      setShowLoader(true);
+      sessionStorage.setItem('hasVisitedHome', 'true');
+    }
+  }, []);
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,11 +44,15 @@ export default function HomeScreen() {
   useEffect(() => {
     async function load() {
       try {
-        const [categoriesResponse, productsResponse] = await Promise.all([
-          api.get<{ results: Category[] }>('/categories/'),
+        const [categoriesData, productsResponse] = await Promise.all([
+          getParentCategories(),
           api.get<{ results: ProductSummary[] }>('/products/?page_size=100')
         ]);
-        setCategories((categoriesResponse.data.results || []).filter((category) => !category.parent));
+        // Handle both paginated and array responses
+        const parentCategories = Array.isArray(categoriesData) 
+          ? categoriesData 
+          : categoriesData.results || [];
+        setCategories(parentCategories);
         const products = (productsResponse.data.results || []).map((product) => ({
           ...product,
           lowestPrice: product.lowestPrice ?? product.lowest_price
@@ -56,9 +72,9 @@ export default function HomeScreen() {
       setLoadingDesc(true);
       try {
         const response = await getProductsWithDescription(50, 1, 100);
-        const products = (response.results || []).map((product) => ({
+        const products = (response.results || []).map((product: ProductSummary) => ({
           ...product,
-          lowestPrice: product.lowestPrice ?? product.lowest_price
+          lowestPrice: (product as any).lowestPrice ?? (product as any).lowest_price
         }));
         setProductsWithDesc(products);
       } catch (error) {
@@ -82,8 +98,18 @@ export default function HomeScreen() {
     void loadAdSenseConfig();
   }, []);
 
+  const handleLoaderComplete = () => {
+    setShowLoader(false);
+  };
+
+  const isContentLoading = loading || loadingDesc;
+
   return (
-    <div className="space-y-16">
+    <>
+      {showLoader && (
+        <HomeLoader isLoading={isContentLoading} onComplete={handleLoaderComplete} />
+      )}
+      <div className="space-y-16">
       <section className="relative grid gap-10 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-10 py-16 text-white shadow-xl md:grid-cols-[1.1fr,1fr]">
         {/* Background Image */}
         <div 
@@ -136,7 +162,7 @@ export default function HomeScreen() {
       </section>
 
       <div className="flex justify-center">
-        <AdSense slot={adsenseConfig?.homepage_top || ''} className="my-8" />
+        <AdSense slot="homepage_top" className="my-8" />
       </div>
 
       <section>
@@ -146,42 +172,14 @@ export default function HomeScreen() {
         </header>
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {loading && categories.length === 0 && <CategorySkeleton />}
-          {categories.map((category) => {
-            const categoryImage = getCategoryImage(category.name) || category.icon;
-            return (
-              <Link
-                key={category.slug}
-                href={`/categories/${category.slug}`}
-                className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
-              >
-                {categoryImage ? (
-                  <div className="relative mb-4 h-16 w-16">
-                    <Image 
-                      src={categoryImage} 
-                      alt={category.name}
-                      width={64}
-                      height={64}
-                      className="object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
-                    <span className="text-2xl font-bold text-primary">
-                      {category.name.charAt(0)}
-                    </span>
-                  </div>
-                )}
-                <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
-                  {category.name}
-                </h3>
-              </Link>
-            );
-          })}
+          {categories.map((category) => (
+            <CategoryCard key={category.slug} category={category} />
+          ))}
         </div>
       </section>
 
       <div className="flex justify-center">
-        <AdSense slot={adsenseConfig?.homepage_middle || ''} className="my-8" />
+        <AdSense slot="homepage_middle" className="my-8" />
       </div>
 
       <section>
@@ -206,9 +204,44 @@ export default function HomeScreen() {
       </section>
 
       <div className="flex justify-center">
-        <AdSense slot={adsenseConfig?.homepage_bottom || ''} className="my-8" />
+        <AdSense slot="homepage_bottom" className="my-8" />
       </div>
     </div>
+    </>
+  );
+}
+
+function CategoryCard({ category }: { category: Category }) {
+  const [imageError, setImageError] = useState(false);
+  const categoryImage = getCategoryImage(category.name) || category.icon;
+
+  return (
+    <Link
+      href={`/categories/${category.slug}`}
+      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
+    >
+      {categoryImage && !imageError ? (
+        <div className="relative mb-4 h-16 w-16">
+          <Image 
+            src={categoryImage} 
+            alt={category.name}
+            width={64}
+            height={64}
+            className="object-contain"
+            onError={() => setImageError(true)}
+          />
+        </div>
+      ) : (
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+          <span className="text-2xl font-bold text-primary">
+            {category.name.charAt(0)}
+          </span>
+        </div>
+      )}
+      <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
+        {category.name}
+      </h3>
+    </Link>
   );
 }
 

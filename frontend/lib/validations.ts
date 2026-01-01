@@ -9,9 +9,9 @@ export const productSchema = z.object({
     .max(200, 'Le nom ne peut pas dépasser 200 caractères'),
   description: z
     .string()
-    .max(5000, 'La description ne peut pas dépasser 5000 caractères')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'La description est requise')
+    .min(500, 'La description doit contenir au moins 500 caractères')
+    .max(5000, 'La description ne peut pas dépasser 5000 caractères'),
   brand: z
     .string()
     .max(120, 'La marque ne peut pas dépasser 120 caractères')
@@ -19,8 +19,8 @@ export const productSchema = z.object({
     .or(z.literal('')),
   category_id: z
     .union([z.number().positive('Catégorie invalide'), z.nan(), z.undefined()])
-    .optional()
-    .transform((val) => (typeof val === 'number' && !isNaN(val) ? val : undefined)),
+    .transform((val) => (typeof val === 'number' && !isNaN(val) ? val : undefined))
+    .optional(),
   image: z
     .string()
     .refine(
@@ -32,12 +32,10 @@ export const productSchema = z.object({
   tags: z
     .array(z.string().min(1, 'Les tags ne peuvent pas être vides'))
     .max(20, 'Maximum 20 tags autorisés')
-    .optional()
-    .default([]),
+    .optional(),
   specs: z
-    .record(z.union([z.string(), z.number(), z.boolean()]))
-    .optional()
-    .default({}),
+    .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+    .optional(),
   release_date: z
     .string()
     .refine(

@@ -1,8 +1,9 @@
 import api from './apiClient';
-import type { Product, PaginatedResponse } from './types';
+import type { Product, PaginatedResponse, PriceOffer } from './types';
 
 export type PriceOfferCreateData = {
-  merchant_id: number;
+  merchant_id?: number;
+  merchant_name?: string;
   price: number;
   url?: string;
   stock_status?: 'in_stock' | 'low_stock' | 'out_of_stock';
@@ -175,8 +176,11 @@ export async function getCategories(): Promise<Array<{ id: number; name: string;
 
 // Get merchants for dropdown
 export async function getMerchants(): Promise<Array<{ id: number; name: string; logo?: string; website?: string }>> {
-  const response = await api.get('/merchants/');
-  return response.data.results || response.data;
+  const response = await api.get<{ results: Array<{ id: number; name: string; logo?: string; website?: string }> } | Array<{ id: number; name: string; logo?: string; website?: string }>>(
+    '/merchants/',
+    { params: { page_size: '1000' } } // Fetch all merchants in one go
+  );
+  return Array.isArray(response.data) ? response.data : response.data.results || [];
 }
 
 // Get products with descriptions
@@ -192,6 +196,78 @@ export async function getProductsWithDescription(
       page_size: pageSize
     }
   });
+  return response.data;
+}
+
+// Submit a new price offer
+export type OfferSubmitData = {
+  product_slug: string;
+  merchant_id?: number;
+  merchant_name?: string;
+  price: number;
+  url?: string;
+  stock_status?: 'in_stock' | 'low_stock' | 'out_of_stock';
+  currency?: string;
+};
+
+export async function submitOffer(
+  data: OfferSubmitData,
+  token: string | null
+): Promise<PriceOffer> {
+  const response = await api.post<PriceOffer>('/offers/submit/', data, {
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+  });
+  return response.data;
+}
+
+// Get pending offers (admin only)
+export async function getPendingOffers(
+  token: string | null,
+  page: number = 1
+): Promise<PaginatedResponse<PriceOffer>> {
+  const response = await api.get<PaginatedResponse<PriceOffer>>('/offers/pending/', {
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    params: { page },
+  });
+  return response.data;
+}
+
+// Approve offer (admin only)
+export async function approveOffer(
+  offerId: number,
+  token: string | null
+): Promise<PriceOffer> {
+  const response = await api.post<PriceOffer>(
+    `/offers/${offerId}/approve/`,
+    {},
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+  return response.data;
+}
+
+// Reject offer (admin only)
+export async function rejectOffer(
+  offerId: number,
+  rejectionReason: string,
+  token: string | null
+): Promise<PriceOffer> {
+  const response = await api.post<PriceOffer>(
+    `/offers/${offerId}/reject/`,
+    { rejection_reason: rejectionReason },
+    {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
   return response.data;
 }
 

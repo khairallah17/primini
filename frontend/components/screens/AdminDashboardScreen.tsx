@@ -8,9 +8,12 @@ import {
   getAllProducts,
   getMyProducts,
   approveProduct,
-  rejectProduct
+  rejectProduct,
+  getPendingOffers,
+  approveOffer,
+  rejectOffer
 } from '../../lib/productApi';
-import type { Product, PaginatedResponse } from '../../lib/types';
+import type { Product, PaginatedResponse, PriceOffer } from '../../lib/types';
 import Link from 'next/link';
 
 type TabType = 'pending' | 'all' | 'my';
@@ -22,10 +25,15 @@ function AdminDashboardContent() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [pagination, setPagination] = useState<PaginatedResponse<Product> | null>(null);
+  const [pendingOffers, setPendingOffers] = useState<PriceOffer[]>([]);
+  const [offersPagination, setOffersPagination] = useState<PaginatedResponse<PriceOffer> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState<string | null>(null);
+  const [processingOffer, setProcessingOffer] = useState<number | null>(null);
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
+  const [offerRejectionReason, setOfferRejectionReason] = useState<Record<number, string>>({});
   const [showRejectForm, setShowRejectForm] = useState<string | null>(null);
+  const [showOfferRejectForm, setShowOfferRejectForm] = useState<number | null>(null);
   
   // Filters for "All Products" tab
   const [approvalFilter, setApprovalFilter] = useState<string>('');
@@ -36,6 +44,9 @@ function AdminDashboardContent() {
   useEffect(() => {
     if (!tokens?.key) return;
     loadProducts();
+    if (activeTab === 'pending') {
+      loadPendingOffers();
+    }
   }, [tokens, activeTab, approvalFilter]);
 
   // Separate effect for search query with debounce
@@ -87,6 +98,54 @@ function AdminDashboardContent() {
       setError(err.response?.data?.detail || err.message || 'Erreur lors du chargement');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPendingOffers = async (page: number = 1) => {
+    if (!tokens?.key) return;
+
+    try {
+      const data = await getPendingOffers(tokens.key, page);
+      setPendingOffers(data.results);
+      setOffersPagination(data);
+    } catch (err: any) {
+      console.error('Error loading pending offers:', err);
+    }
+  };
+
+  const handleApproveOffer = async (offerId: number) => {
+    if (!tokens?.key) return;
+
+    setProcessingOffer(offerId);
+    try {
+      await approveOffer(offerId, tokens.key);
+      await loadPendingOffers(offersPagination?.current_page || 1);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || err.message || 'Erreur lors de l\'approbation');
+    } finally {
+      setProcessingOffer(null);
+    }
+  };
+
+  const handleRejectOffer = async (offerId: number) => {
+    if (!tokens?.key) return;
+
+    const reason = offerRejectionReason[offerId] || '';
+    if (!reason.trim()) {
+      setError('Veuillez fournir une raison de rejet');
+      return;
+    }
+
+    setProcessingOffer(offerId);
+    try {
+      await rejectOffer(offerId, reason, tokens.key);
+      setShowOfferRejectForm(null);
+      setOfferRejectionReason({ ...offerRejectionReason, [offerId]: '' });
+      await loadPendingOffers(offersPagination?.current_page || 1);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || err.message || 'Erreur lors du rejet');
+    } finally {
+      setProcessingOffer(null);
     }
   };
 
@@ -152,21 +211,64 @@ function AdminDashboardContent() {
     setImageErrors(prev => ({ ...prev, [productId]: true }));
   };
 
-  const renderProductRow = (product: Product) => (
+  const getImageUrl = (product: Product): string | null => {
+    // Prefer image_display if available (from backend)
+    if (product.image_display) {
+      return product.image_display;
+    }
+    
+    // If image_file is available, construct the URL
+    if (product.image_file) {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
+        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
+        : 'http://localhost:8000';
+      const imagePath = product.image_file.startsWith('/') ? product.image_file : `/${product.image_file}`;
+      return `${baseUrl}${imagePath}`;
+    }
+    
+    // Fallback to image field
+    if (!product.image) return null;
+    
+    // If it's already a full URL (http/https), use it directly
+    if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
+      return product.image;
+    }
+    
+    // If it's a local path (starts with /media/ or media/), prepend backend URL
+    if (product.image.startsWith('/media/') || product.image.startsWith('media/')) {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
+        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
+        : 'http://localhost:8000';
+      const imagePath = product.image.startsWith('/') ? product.image : `/${product.image}`;
+      return `${baseUrl}${imagePath}`;
+    }
+    
+    // If it's a relative path without /media/, assume it's in media/products/
+    if (!product.image.includes('://')) {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
+        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
+        : 'http://localhost:8000';
+      const imagePath = product.image.startsWith('/') ? product.image : `/media/products/${product.image}`;
+      return `${baseUrl}${imagePath}`;
+    }
+    
+    return product.image;
+  };
+
+  const renderProductRow = (product: Product) => {
+    const imageUrl = getImageUrl(product);
+    
+    return (
     <tr key={product.id}>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
-          {product.image && !imageErrors[product.id] ? (
+          {imageUrl && !imageErrors[product.id] ? (
             <img
-              src={product.image}
+              src={imageUrl}
               alt={product.name}
               className="h-12 w-12 rounded object-cover mr-4"
               onError={() => handleImageError(product.id)}
             />
-          ) : product.image ? (
-            <div className="h-12 w-12 rounded bg-gray-200 mr-4 flex items-center justify-center">
-              <span className="text-xs text-gray-400">N/A</span>
-            </div>
           ) : (
             <div className="h-12 w-12 rounded bg-gray-200 mr-4 flex items-center justify-center">
               <span className="text-xs text-gray-400">N/A</span>
@@ -196,7 +298,7 @@ function AdminDashboardContent() {
       )}
       {activeTab !== 'my' && (
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {product.created_by_email || 'N/A'}
+          {product.created_by_email || 'admin'}
         </td>
       )}
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -330,7 +432,8 @@ function AdminDashboardContent() {
         </div>
       </td>
     </tr>
-  );
+    );
+  };
 
   if (loading && !products.length) {
     return (
@@ -341,24 +444,13 @@ function AdminDashboardContent() {
   }
 
   return (
-    <div className="h-full w-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="h-full w-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="mb-6 flex items-start justify-between">
+        <div className="mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Tableau de bord Admin</h1>
             <p className="mt-2 text-sm text-gray-500">Gérez les produits, utilisateurs et paramètres</p>
           </div>
-          <Link
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dark transition-colors shadow-sm"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Voir les produits
-          </Link>
         </div>
 
         {/* Tabs */}
@@ -377,9 +469,9 @@ function AdminDashboardContent() {
               }`}
             >
               En attente
-              {activeTab === 'pending' && pagination && (
+              {activeTab === 'pending' && (
                 <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white">
-                  {pagination.count}
+                  {(pagination?.count || 0) + (offersPagination?.count || 0)}
                 </span>
               )}
             </button>
@@ -464,9 +556,9 @@ function AdminDashboardContent() {
         {/* Info banner for pending tab */}
         {activeTab === 'pending' && (
           <div className="mb-6 rounded-md bg-blue-50 p-4 text-blue-800">
-            <p className="font-semibold">Produits en attente d'approbation</p>
+            <p className="font-semibold">Éléments en attente d&apos;approbation</p>
             <p className="mt-1 text-sm">
-              {pagination?.count || 0} produit(s) en attente
+              {pagination?.count || 0} produit(s) et {offersPagination?.count || 0} offre(s) en attente
             </p>
           </div>
         )}
@@ -475,17 +567,251 @@ function AdminDashboardContent() {
           <div className="mb-4 rounded-md bg-red-50 p-4 text-red-800">{error}</div>
         )}
 
-        {products.length === 0 ? (
-          <div className="bg-white p-12 text-center shadow rounded-lg">
-            <p className="text-lg text-gray-500">
-              {activeTab === 'pending'
-                ? 'Aucun produit en attente d\'approbation'
-                : activeTab === 'all'
-                ? 'Aucun produit trouvé'
-                : 'Aucun produit créé'}
-            </p>
-          </div>
-        ) : (
+        {activeTab === 'pending' && (
+          <>
+            {/* Pending Products Section */}
+            {products.length > 0 && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold text-gray-900">Produits en attente</h2>
+                <div className="overflow-hidden bg-white shadow rounded-lg">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Produit
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Créé par
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Date
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {products.map(renderProductRow)}
+                      </tbody>
+                    </table>
+                  </div>
+                  {pagination && pagination.total_pages > 1 && (
+                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-6 py-4">
+                      <div className="text-sm text-gray-700">
+                        Page {pagination.current_page} sur {pagination.total_pages} ({pagination.count} produit(s))
+                      </div>
+                      <div className="flex gap-2">
+                        {pagination.previous_page && (
+                          <button
+                            onClick={() => loadProducts(pagination.previous_page!)}
+                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Précédent
+                          </button>
+                        )}
+                        {pagination.next_page && (
+                          <button
+                            onClick={() => loadProducts(pagination.next_page!)}
+                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Suivant
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Pending Offers Section */}
+            {pendingOffers.length > 0 && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold text-gray-900">Offres en attente</h2>
+                <div className="overflow-hidden bg-white shadow rounded-lg">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Produit
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Marchand
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Prix
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Stock
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Créé par
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Date
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {pendingOffers.map((offer) => (
+                          <tr key={offer.id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {offer.product?.slug ? (
+                                  <Link
+                                    href={`/product/${offer.product.slug}`}
+                                    className="hover:text-primary"
+                                  >
+                                    {offer.product.name}
+                                  </Link>
+                                ) : (
+                                  offer.product?.name || 'N/A'
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {offer.merchant?.name || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {typeof offer.price === 'number' 
+                                ? offer.price.toFixed(2) 
+                                : parseFloat(String(offer.price || 0)).toFixed(2)} {offer.currency || 'MAD'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                offer.stock_status === 'in_stock' ? 'bg-green-100 text-green-800' :
+                                offer.stock_status === 'out_of_stock' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {offer.stock_status === 'in_stock' ? 'En stock' :
+                                 offer.stock_status === 'out_of_stock' ? 'Rupture' :
+                                 'Stock faible'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {offer.created_by_email || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {offer.date_updated
+                                ? new Date(offer.date_updated).toLocaleDateString('fr-FR')
+                                : 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              {showOfferRejectForm === offer.id ? (
+                                <div className="flex flex-col gap-2 items-end">
+                                  <textarea
+                                    placeholder="Raison du rejet..."
+                                    value={offerRejectionReason[offer.id] || ''}
+                                    onChange={(e) =>
+                                      setOfferRejectionReason({
+                                        ...offerRejectionReason,
+                                        [offer.id]: e.target.value
+                                      })
+                                    }
+                                    className="w-full rounded-md border-gray-300 text-sm"
+                                    rows={2}
+                                  />
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => handleRejectOffer(offer.id)}
+                                      disabled={processingOffer === offer.id}
+                                      className="rounded-md bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700 disabled:opacity-50"
+                                    >
+                                      {processingOffer === offer.id ? '...' : 'Confirmer'}
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setShowOfferRejectForm(null);
+                                        setOfferRejectionReason({ ...offerRejectionReason, [offer.id]: '' });
+                                      }}
+                                      className="rounded-md bg-gray-200 px-3 py-1 text-xs text-gray-700 hover:bg-gray-300"
+                                    >
+                                      Annuler
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    onClick={() => handleApproveOffer(offer.id)}
+                                    disabled={processingOffer === offer.id}
+                                    className="rounded-md bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700 disabled:opacity-50"
+                                  >
+                                    {processingOffer === offer.id ? '...' : 'Approuver'}
+                                  </button>
+                                  <button
+                                    onClick={() => setShowOfferRejectForm(offer.id)}
+                                    disabled={processingOffer === offer.id}
+                                    className="rounded-md bg-red-600 px-3 py-1 text-xs text-white hover:bg-red-700 disabled:opacity-50"
+                                  >
+                                    Rejeter
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {offersPagination && offersPagination.total_pages > 1 && (
+                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-6 py-4">
+                      <div className="text-sm text-gray-700">
+                        Page {offersPagination.current_page} sur {offersPagination.total_pages} ({offersPagination.count} offre(s))
+                      </div>
+                      <div className="flex gap-2">
+                        {offersPagination.previous_page && (
+                          <button
+                            onClick={() => loadPendingOffers(offersPagination.previous_page!)}
+                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Précédent
+                          </button>
+                        )}
+                        {offersPagination.next_page && (
+                          <button
+                            onClick={() => loadPendingOffers(offersPagination.next_page!)}
+                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
+                            Suivant
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Empty state for pending tab */}
+            {products.length === 0 && pendingOffers.length === 0 && !loading && (
+              <div className="bg-white p-12 text-center shadow rounded-lg">
+                <p className="text-lg text-gray-500">
+                  Aucun élément en attente d&apos;approbation
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Other tabs (all, my) */}
+        {activeTab !== 'pending' && (
+          <>
+            {products.length === 0 ? (
+              <div className="bg-white p-12 text-center shadow rounded-lg">
+                <p className="text-lg text-gray-500">
+                  {activeTab === 'all'
+                    ? 'Aucun produit trouvé'
+                    : 'Aucun produit créé'}
+                </p>
+              </div>
+            ) : (
           <div className="overflow-hidden bg-white shadow rounded-lg">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -545,6 +871,8 @@ function AdminDashboardContent() {
               </div>
             )}
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

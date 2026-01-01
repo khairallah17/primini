@@ -72,7 +72,7 @@ function CSVUploadContent() {
               <li><strong>description</strong> - Description du produit</li>
               <li><strong>brand</strong> - Marque</li>
               <li><strong>category</strong> - Nom de la catégorie</li>
-              <li><strong>image</strong> - URL de l'image</li>
+              <li><strong>image</strong> - URL de l&apos;image</li>
               <li><strong>price</strong> - Prix en MAD</li>
               <li><strong>merchant</strong> - Nom du marchand</li>
               <li><strong>url</strong> - URL du produit</li>

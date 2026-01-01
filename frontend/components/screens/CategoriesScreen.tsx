@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import api from '../../lib/apiClient';
+import { getAllCategories } from '../../lib/categoryApi';
 import type { Category } from '../../lib/types';
 
 export default function CategoriesScreen({ title }: { title?: string }) {
@@ -12,8 +12,8 @@ export default function CategoriesScreen({ title }: { title?: string }) {
   useEffect(() => {
     async function load() {
       try {
-        const response = await api.get<{ results: Category[] }>('/categories/');
-        setCategories(response.data.results || []);
+        const categoriesData = await getAllCategories();
+        setCategories(categoriesData);
       } catch (error) {
         console.warn('Failed to load categories', error);
       } finally {

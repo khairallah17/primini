@@ -22,8 +22,8 @@ class PriceOfferInline(admin.TabularInline):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'brand', 'approval_status', 'created_by', 'approved_by', 'created_at')
-    list_filter = ('category', 'brand', 'approval_status', 'created_at')
+    list_display = ('name', 'category', 'subcategory', 'brand', 'approval_status', 'created_by', 'approved_by', 'created_at')
+    list_filter = ('category', 'subcategory', 'brand', 'approval_status', 'created_at')
     search_fields = ('name', 'brand', 'created_by__email')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [PriceOfferInline]
@@ -31,7 +31,7 @@ class ProductAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Informations de base', {
-            'fields': ('name', 'slug', 'description', 'image', 'category', 'brand', 'release_date', 'tags')
+            'fields': ('name', 'slug', 'description', 'image', 'category', 'subcategory', 'brand', 'release_date', 'tags')
         }),
         ('Données techniques', {
             'fields': ('specs', 'source_category', 'raw_price_map', 'raw_url_map')

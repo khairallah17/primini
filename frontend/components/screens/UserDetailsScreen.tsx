@@ -217,7 +217,7 @@ function UserDetailsContent() {
               </div>
               {user.username && (
                 <div>
-                  <p className="text-sm text-gray-600">Nom d'utilisateur</p>
+                  <p className="text-sm text-gray-600">Nom d&apos;utilisateur</p>
                   <p className="text-sm font-medium">@{user.username}</p>
                 </div>
               )}
@@ -242,7 +242,7 @@ function UserDetailsContent() {
                 <p className="text-sm font-medium">{getStatusBadge(user.is_active)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Date d'inscription</p>
+                <p className="text-sm text-gray-600">Date d&apos;inscription</p>
                 <p className="text-sm font-medium">
                   {new Date(user.date_joined).toLocaleString('fr-FR')}
                 </p>
@@ -312,7 +312,7 @@ function UserDetailsContent() {
                         Produit
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Statut d'approbation
+                        Statut d&apos;approbation
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                         Date de création
