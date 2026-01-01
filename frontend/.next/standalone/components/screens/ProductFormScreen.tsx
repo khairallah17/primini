@@ -363,7 +363,7 @@ function ProductFormContent() {
     
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'}/products/${productSlug}/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/${productSlug}/`, {
         headers: {
           Authorization: `Token ${tokens.key}`
         }
@@ -482,7 +482,7 @@ function ProductFormContent() {
     });
 
     // Load available tags from products
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'}/products/?page_size=1000`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/?page_size=1000`)
       .then((res) => res.json())
       .then((data) => {
         const allTags = new Set<string>();
@@ -623,7 +623,7 @@ function ProductFormContent() {
         }
       }
 
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api'}/products/`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/`;
       const method = isEdit && slug ? 'PUT' : 'POST';
       const url = isEdit && slug 
         ? `${apiUrl}${slug}/`

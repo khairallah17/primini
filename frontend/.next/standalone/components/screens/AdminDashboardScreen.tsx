@@ -219,9 +219,8 @@ function AdminDashboardContent() {
     
     // If image_file is available, construct the URL
     if (product.image_file) {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
-        : 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const baseUrl = apiUrl.replace('/api', '');
       const imagePath = product.image_file.startsWith('/') ? product.image_file : `/${product.image_file}`;
       return `${baseUrl}${imagePath}`;
     }
@@ -236,18 +235,16 @@ function AdminDashboardContent() {
     
     // If it's a local path (starts with /media/ or media/), prepend backend URL
     if (product.image.startsWith('/media/') || product.image.startsWith('media/')) {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
-        : 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const baseUrl = apiUrl.replace('/api', '');
       const imagePath = product.image.startsWith('/') ? product.image : `/${product.image}`;
       return `${baseUrl}${imagePath}`;
     }
     
     // If it's a relative path without /media/, assume it's in media/products/
     if (!product.image.includes('://')) {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
-        : 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const baseUrl = apiUrl.replace('/api', '');
       const imagePath = product.image.startsWith('/') ? product.image : `/media/products/${product.image}`;
       return `${baseUrl}${imagePath}`;
     }

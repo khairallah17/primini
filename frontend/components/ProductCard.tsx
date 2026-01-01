@@ -32,18 +32,16 @@ export default function ProductCard({ product }: ProductCardProps) {
     
     // If it's a local path (starts with /media/ or media/), prepend backend URL
     if (imagePath.startsWith('/media/') || imagePath.startsWith('media/')) {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
-        : 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const baseUrl = apiUrl.replace('/api', '');
       const imagePathClean = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
       return `${baseUrl}${imagePathClean}`;
     }
     
     // If it's a relative path without /media/, assume it's in media/products/
     if (!imagePath.startsWith('/')) {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL 
-        ? process.env.NEXT_PUBLIC_API_BASE_URL.replace('/api', '')
-        : 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const baseUrl = apiUrl.replace('/api', '');
       return `${baseUrl}/media/products/${imagePath}`;
     }
     
