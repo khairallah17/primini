@@ -1,0 +1,44 @@
+{
+  "app/forgot-password/page.tsx -> ../../components/screens/ForgotPasswordScreen": {
+    "id": 7583,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/231-a4e9f556b8e481c5.js",
+      "static/chunks/4974-4ef76a1e89745ed2.js",
+      "static/chunks/5981-9094763d3bb52f6d.js",
+      "static/chunks/7583.d483ba2baf6886f6.js"
+    ]
+  },
+  "app/forgot-password/reset/page.tsx -> ../../../components/screens/ResetPasswordScreen": {
+    "id": 9850,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/231-a4e9f556b8e481c5.js",
+      "static/chunks/4974-4ef76a1e89745ed2.js",
+      "static/chunks/5981-9094763d3bb52f6d.js",
+      "static/chunks/9850.82a33dfd45c79147.js"
+    ]
+  },
+  "app/forgot-password/verify/page.tsx -> ../../../components/screens/VerifyOTPScreen": {
+    "id": 1779,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/231-a4e9f556b8e481c5.js",
+      "static/chunks/4974-4ef76a1e89745ed2.js",
+      "static/chunks/5981-9094763d3bb52f6d.js",
+      "static/chunks/1779.aa8e9e6b1452ec90.js"
+    ]
+  },
+  "app/product/[slug]/page.tsx -> ../../../components/screens/ProductDetailScreen": {
+    "id": 1790,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/231-a4e9f556b8e481c5.js",
+      "static/chunks/4974-4ef76a1e89745ed2.js",
+      "static/chunks/1877-3c281531e26da1e9.js",
+      "static/chunks/8152.45ab48f3903afd02.js",
+      "static/chunks/3642-8b2808a578204547.js",
+      "static/chunks/1790.80707ac01fe92d8c.js"
+    ]
+  }
+}

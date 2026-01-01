@@ -21,7 +21,6 @@ media/
 
 # Node
 node_modules/
-.next/
 out/
 dist/
 .cache/
