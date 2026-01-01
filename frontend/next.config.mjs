@@ -1,8 +1,33 @@
 /** @type {import('next').NextConfig} */
+
+// Extract hostname and protocol from NEXT_PUBLIC_API_URL
+function getApiUrlPattern() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) return null;
+  
+  try {
+    const url = new URL(apiUrl);
+    return {
+      protocol: url.protocol.replace(':', '') || 'http',
+      hostname: url.hostname
+    };
+  } catch (e) {
+    console.warn('Invalid NEXT_PUBLIC_API_URL:', apiUrl);
+    return null;
+  }
+}
+
+const apiUrlPattern = getApiUrlPattern();
+
 const nextConfig = {
   output: 'standalone',
   images: {
     remotePatterns: [
+      // Add API URL hostname if configured
+      ...(apiUrlPattern ? [{
+        protocol: apiUrlPattern.protocol,
+        hostname: apiUrlPattern.hostname
+      }] : []),
       {
         protocol: 'https',
         hostname: 'cdn.primini.ma'
@@ -66,7 +91,8 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn.mos.cms.futurecdn.net'
-      }
+      },
+      
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
