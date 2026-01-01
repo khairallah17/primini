@@ -15,7 +15,7 @@ build/
 
 # Django
 staticfiles/
-media/
+products/
 *.log
 *.pot
 
