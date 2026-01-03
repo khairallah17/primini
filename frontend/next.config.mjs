@@ -23,76 +23,12 @@ const nextConfig = {
   output: 'standalone',
   images: {
     remotePatterns: [
-      // Add API URL hostname if configured
-      ...(apiUrlPattern ? [{
-        protocol: apiUrlPattern.protocol,
-        hostname: apiUrlPattern.hostname
-      }] : []),
       {
         protocol: 'https',
-        hostname: 'cdn.primini.ma'
+        hostname: 'api.azyo6271.odns.fr',
+        port: '',
+        pathname: '/media/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'primini.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.iris.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'iris.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.biougnach.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'biougnach.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.electroplanet.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'electroplanet.ma'
-      },
-      {
-        protocol: 'https',
-        hostname: 'websitephotosa.blob.core.windows.net'
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com'
-      },
-      {
-        protocol: 'https',
-        hostname: '**.placeholder.com'
-      },
-      {
-        protocol: 'https',
-        hostname: 'api.dicebear.com'
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost'
-      },
-      {
-        protocol: 'https',
-        hostname: 'image.useinsider.com'
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com'
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.mos.cms.futurecdn.net'
-      },
-      
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
