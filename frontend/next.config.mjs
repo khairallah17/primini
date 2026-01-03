@@ -8,7 +8,7 @@ function getApiUrlPattern() {
   try {
     const url = new URL(apiUrl);
     return {
-      protocol: url.protocol.replace(':', '') || 'http',
+      protocol: url.protocol.replace(':', '') || 'https',
       hostname: url.hostname
     };
   } catch (e) {
