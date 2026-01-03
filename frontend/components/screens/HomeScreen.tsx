@@ -229,6 +229,7 @@ function CategoryCard({ category }: { category: Category }) {
             height={64}
             className="object-contain"
             onError={() => setImageError(true)}
+            unoptimized={true}
           />
         </div>
       ) : (

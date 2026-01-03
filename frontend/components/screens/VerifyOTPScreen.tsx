@@ -108,6 +108,7 @@ export default function VerifyOTPScreen() {
               height={40}
               className="h-8 w-auto object-contain"
               priority
+              unoptimized={true}
             />
           </Link>
         </div>
@@ -171,6 +172,7 @@ export default function VerifyOTPScreen() {
           fill
           className="object-cover"
           priority
+          unoptimized={true}
         />
       </div>
     </div>

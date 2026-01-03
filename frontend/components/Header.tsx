@@ -238,6 +238,7 @@ export default function Header() {
               height={320}
               className="h-16 sm:h-20 w-auto object-contain"
               priority
+              unoptimized={true}
             />
           </Link>
 
@@ -476,6 +477,7 @@ export default function Header() {
                   height={320}
                   className="h-12 w-auto object-contain"
                   priority
+                  unoptimized={true}
                 />
               </Link>
               <button

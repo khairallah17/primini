@@ -57,6 +57,7 @@ export default function HomeLoader({ isLoading, onComplete }: HomeLoaderProps) {
             height={320}
             className="h-32 w-auto object-contain md:h-40"
             priority
+            unoptimized={true}
           />
         </div>
 

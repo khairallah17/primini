@@ -56,6 +56,7 @@ const ProductImageGallery = forwardRef<HTMLDivElement, ProductImageGalleryProps>
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
                   onError={() => handleImageError(selectedIndex)}
+                  unoptimized={true}
                 />
               </div>
               
@@ -128,6 +129,7 @@ const ProductImageGallery = forwardRef<HTMLDivElement, ProductImageGalleryProps>
                           quality={75}
                           loading="lazy"
                           onError={() => handleImageError(index)}
+                          unoptimized={true}
                         />
                       ) : (
                         <div className="w-full h-full bg-slate-200 flex items-center justify-center">

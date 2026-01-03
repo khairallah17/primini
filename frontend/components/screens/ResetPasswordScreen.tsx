@@ -135,6 +135,7 @@ export default function ResetPasswordScreen() {
             fill
             className="object-cover"
             priority
+            unoptimized={true}
           />
         </div>
       </div>
@@ -153,6 +154,7 @@ export default function ResetPasswordScreen() {
               height={40}
               className="h-8 w-auto object-contain"
               priority
+              unoptimized={true}
             />
           </Link>
         </div>
@@ -226,6 +228,7 @@ export default function ResetPasswordScreen() {
           fill
           className="object-cover"
           priority
+          unoptimized={true}
         />
       </div>
     </div>

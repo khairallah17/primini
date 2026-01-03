@@ -161,6 +161,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
                   onError={handleImageError}
+                  unoptimized={true}
                 />
               </div>
             </div>

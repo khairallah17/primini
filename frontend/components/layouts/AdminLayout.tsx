@@ -74,6 +74,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               height={sidebarOpen ? 60 : 50}
               className={`${sidebarOpen ? 'h-16 w-auto' : 'h-12 w-12'} object-contain transition-all`}
               priority
+              unoptimized={true}
             />
           </Link>
           <button

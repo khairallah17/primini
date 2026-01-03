@@ -93,7 +93,7 @@ export default function AdSense({
           width={728}
           height={90}
           className="w-full h-auto object-contain"
-          unoptimized
+          unoptimized={true}
         />
       </div>
     );
