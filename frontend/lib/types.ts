@@ -92,3 +92,24 @@ export type Promotion = {
   title: string;
   products: Product[];
 };
+
+export type BlogPost = {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  featured_image?: string;
+  featured_image_url?: string;
+  featured_image_url_display?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
+  status: 'draft' | 'published' | 'archived';
+  author?: number;
+  author_name?: string;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+  is_published: boolean;
+};

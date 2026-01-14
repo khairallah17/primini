@@ -12,8 +12,11 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
-from .models import FaqEntry, Page, SiteSettings
-from .serializers import FaqEntrySerializer, PageSerializer, SiteSettingsSerializer, AdSenseConfigSerializer
+from .models import FaqEntry, Page, SiteSettings, BlogPost, PageAdConfig
+from .serializers import (
+    FaqEntrySerializer, PageSerializer, SiteSettingsSerializer, AdSenseConfigSerializer,
+    BlogPostSerializer, BlogPostListSerializer, PageAdConfigSerializer
+)
 
 
 class PageViewSet(viewsets.ReadOnlyModelViewSet):
@@ -165,3 +168,84 @@ class SiteSettingsViewSet(viewsets.ModelViewSet):
                 
                 return Response({'detail': 'AdSense configuration updated successfully'}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BlogPostViewSet(viewsets.ModelViewSet):
+    """ViewSet for blog posts - admin can create/update/delete, everyone can read published posts"""
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    lookup_field = 'slug'
+    permission_classes = [AllowAny]  # Will be overridden in get_permissions
+
+    def get_permissions(self):
+        """Only admins can create, update, or delete. Everyone can read published posts."""
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_queryset(self):
+        """Filter published posts for non-admin users"""
+        queryset = BlogPost.objects.select_related('author')
+        
+        # Non-admin users only see published posts
+        if not (self.request.user.is_authenticated and 
+                (self.request.user.is_superuser or 
+                 (hasattr(self.request.user, 'is_admin') and self.request.user.is_admin))):
+            queryset = queryset.filter(status='published', published_at__isnull=False)
+        
+        # Order by published date (most recent first)
+        return queryset.order_by('-published_at', '-created_at')
+
+    def get_serializer_class(self):
+        """Use list serializer for list view, full serializer for detail view"""
+        if self.action == 'list':
+            return BlogPostListSerializer
+        return BlogPostSerializer
+
+    def perform_create(self, serializer):
+        """Set author to current user when creating"""
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        """Update author if not set"""
+        if not serializer.instance.author:
+            serializer.save(author=self.request.user)
+        else:
+            serializer.save()
+
+
+class PageAdConfigViewSet(viewsets.ModelViewSet):
+    """ViewSet for page-specific ad configurations - admin only"""
+    queryset = PageAdConfig.objects.all()
+    serializer_class = PageAdConfigSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """Filter by page_type if provided"""
+        queryset = PageAdConfig.objects.all()
+        page_type = self.request.query_params.get('page_type')
+        if page_type:
+            queryset = queryset.filter(page_type=page_type)
+        slot = self.request.query_params.get('slot')
+        if slot:
+            queryset = queryset.filter(slot=slot)
+        # Only filter by enabled for non-admin users (in by_page action)
+        # Admin users see all configs in the main list
+        return queryset.order_by('page_type', 'slot', 'order')
+    
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
+    def by_page(self, request):
+        """Get ad configurations for a specific page type"""
+        page_type = request.query_params.get('page_type', 'homepage')
+        slot = request.query_params.get('slot')
+        
+        queryset = PageAdConfig.objects.filter(
+            page_type__in=[page_type, 'all'],
+            enabled=True
+        )
+        
+        if slot:
+            queryset = queryset.filter(slot=slot)
+        
+        serializer = self.get_serializer(queryset.order_by('order'), many=True)
+        return Response(serializer.data)

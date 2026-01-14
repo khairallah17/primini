@@ -19,6 +19,8 @@ router.register(r'popular-products', product_views.PopularProductViewSet, basena
 router.register(r'alerts', alert_views.AlertViewSet, basename='alert')
 router.register(r'pages', page_views.PageViewSet, basename='page')
 router.register(r'faqs', page_views.FaqEntryViewSet, basename='faq')
+router.register(r'blogs', page_views.BlogPostViewSet, basename='blog')
+router.register(r'page-ads', page_views.PageAdConfigViewSet, basename='page-ad')
 router.register(r'users', user_views.UserViewSet, basename='user')
 router.register(r'settings', page_views.SiteSettingsViewSet, basename='settings')
 

@@ -32,7 +32,8 @@ export default function Header() {
   const topNavLinks = [
     { href: '/deals', label: 'Bons plans' },
     { href: '/magic-tool', label: "L'outil magique" },
-    { href: '/categories', label: 'Catégories' }
+    { href: '/categories', label: 'Catégories' },
+    { href: '/blog', label: 'Blog' }
   ];
 
   // Fetch categories on mount

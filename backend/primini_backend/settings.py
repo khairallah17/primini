@@ -31,9 +31,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'primini_backend.middleware.CsrfExemptApiMiddleware',  # Exempt API from CSRF
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,7 +130,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://azyo6271.odns.fr'
+    'http://azyo6271.odns.fr',
     'http://api.azyo6271.odns.fr'
 ]
 

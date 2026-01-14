@@ -90,3 +90,71 @@ export async function updateAdSenseConfig(
   );
 }
 
+export type PageAdConfig = {
+  id?: number;
+  page_type: 'homepage' | 'blog_list' | 'blog_detail' | 'product_detail' | 'category_list' | 'category_detail' | 'deals' | 'search' | 'magic_tool' | 'dashboard' | 'faq' | 'all';
+  slot: 'top' | 'middle' | 'bottom' | 'sidebar' | 'header' | 'footer';
+  ad_type: 'adsense' | 'banner_image' | 'custom_code';
+  adsense_id?: string;
+  banner_image?: string;
+  banner_image_url?: string;
+  banner_image_url_display?: string;
+  banner_link?: string;
+  custom_code?: string;
+  background_image?: string;
+  background_image_url?: string;
+  background_image_url_display?: string;
+  enabled: boolean;
+  order: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export async function getPageAdConfigs(
+  pageType?: string,
+  slot?: string,
+  token?: string | null
+): Promise<PageAdConfig[]> {
+  const params: Record<string, string> = {};
+  if (pageType) params.page_type = pageType;
+  if (slot) params.slot = slot;
+
+  const headers = token ? { Authorization: `Token ${token}` } : {};
+  const response = await api.get<PageAdConfig[]>('/page-ads/by_page/', {
+    params,
+    headers,
+  });
+  return response.data;
+}
+
+export async function getAllPageAdConfigs(token: string): Promise<PageAdConfig[]> {
+  const response = await api.get<PageAdConfig[] | { results: PageAdConfig[] }>('/page-ads/', {
+    headers: { Authorization: `Token ${token}` },
+  });
+  // Handle both paginated and non-paginated responses
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+  return (response.data as { results: PageAdConfig[] }).results || [];
+}
+
+export async function createPageAdConfig(config: PageAdConfig, token: string): Promise<PageAdConfig> {
+  const response = await api.post<PageAdConfig>('/page-ads/', config, {
+    headers: { Authorization: `Token ${token}` },
+  });
+  return response.data;
+}
+
+export async function updatePageAdConfig(id: number, config: Partial<PageAdConfig>, token: string): Promise<PageAdConfig> {
+  const response = await api.patch<PageAdConfig>(`/page-ads/${id}/`, config, {
+    headers: { Authorization: `Token ${token}` },
+  });
+  return response.data;
+}
+
+export async function deletePageAdConfig(id: number, token: string): Promise<void> {
+  await api.delete(`/page-ads/${id}/`, {
+    headers: { Authorization: `Token ${token}` },
+  });
+}
+

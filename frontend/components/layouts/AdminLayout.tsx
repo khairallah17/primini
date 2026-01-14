@@ -5,6 +5,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
+import {
+  ChartBarIcon,
+  CubeIcon,
+  UsersIcon,
+  BanknotesIcon,
+  DocumentTextIcon,
+  PhotoIcon,
+} from '@heroicons/react/24/outline';
 
 type AdminLayoutProps = {
   children: ReactNode;
@@ -14,7 +22,7 @@ const adminMenuItems = [
   {
     title: 'Tableau de bord',
     href: '/admin',
-    icon: '📊',
+    icon: ChartBarIcon,
   },
   {
     title: 'Gestion des produits',
@@ -23,17 +31,27 @@ const adminMenuItems = [
       { title: 'Créer un produit', href: '/products/create' },
       { title: 'Importer CSV', href: '/products/upload' },
     ],
-    icon: '📦',
+    icon: CubeIcon,
   },
   {
     title: 'Gestion des utilisateurs',
     href: '/admin/users',
-    icon: '👥',
+    icon: UsersIcon,
   },
   {
     title: 'Configuration AdSense',
     href: '/admin/adsense',
-    icon: '💰',
+    icon: BanknotesIcon,
+  },
+  {
+    title: 'Gestion du Blog',
+    href: '/admin/blogs',
+    icon: DocumentTextIcon,
+  },
+  {
+    title: 'Annonces par page',
+    href: '/admin/page-ads',
+    icon: PhotoIcon,
   },
 ];
 
@@ -62,21 +80,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         } fixed left-0 top-0 z-50 h-screen bg-primary border-r border-primary-dark/30 transition-all duration-300 flex flex-col shadow-lg`}
       >
         {/* Logo Section */}
-        <div className="flex h-24 items-center justify-between border-b border-primary-dark/30 px-4">
-          <Link 
-            href="/" 
-            className={`flex items-center ${sidebarOpen ? 'justify-start' : 'justify-center'} flex-1`}
-          >
-            <Image
-              src="/images/avito-colors.jpeg"
-              alt="Avita"
-              width={sidebarOpen ? 180 : 50}
-              height={sidebarOpen ? 60 : 50}
-              className={`${sidebarOpen ? 'h-16 w-auto' : 'h-12 w-12'} object-contain transition-all`}
-              priority
-              unoptimized={true}
-            />
-          </Link>
+        <div className={`flex h-24 items-center border-b border-primary-dark/30 px-4 ${sidebarOpen ? 'justify-between' : 'justify-center'}`}>
+          {sidebarOpen && (
+            <Link 
+              href="/" 
+              className="flex items-center flex-1"
+            >
+              <Image
+                src="/images/avito-colors.jpeg"
+                alt="Avita"
+                width={180}
+                height={60}
+                className="h-16 w-auto object-contain transition-all"
+                priority
+                unoptimized={true}
+              />
+            </Link>
+          )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="rounded-md p-2 text-white/80 hover:bg-primary-dark/30 hover:text-white transition-colors"
@@ -100,10 +120,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {adminMenuItems.map((item, index) => {
               if (item.items) {
                 // Menu item with submenu
+                const IconComponent = item.icon;
                 return (
                   <li key={index}>
                     <div className={`flex items-center gap-3 px-3 py-2 text-sm font-medium text-white/90 ${!sidebarOpen && 'justify-center'}`}>
-                      <span className="text-lg">{item.icon}</span>
+                      <IconComponent className="h-5 w-5" />
                       {sidebarOpen && <span>{item.title}</span>}
                     </div>
                     {sidebarOpen && (
@@ -128,6 +149,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 );
               }
               // Regular menu item
+              const IconComponent = item.icon;
               return (
                 <li key={item.href}>
                   <Link
@@ -138,7 +160,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         : 'text-white/80 hover:bg-white/10 hover:text-white'
                     } ${!sidebarOpen && 'justify-center'}`}
                   >
-                    <span className="text-lg">{item.icon}</span>
+                    <IconComponent className="h-5 w-5" />
                     {sidebarOpen && <span>{item.title}</span>}
                   </Link>
                 </li>
