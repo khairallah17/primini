@@ -12,6 +12,7 @@ venv/
 *.egg-info/
 dist/
 build/
+db.sqlite3
 
 # Django
 staticfiles/
