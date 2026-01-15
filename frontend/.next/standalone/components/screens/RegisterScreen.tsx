@@ -51,6 +51,8 @@ export default function RegisterScreen() {
         registrationData.phone_number = clientData.phone_number;
       }
 
+      console.log(registrationData)
+
       await registerUser(registrationData);
       setShowSuccessMessage(true);
     } catch (err: any) {

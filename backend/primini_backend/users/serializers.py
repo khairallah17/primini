@@ -118,26 +118,49 @@ class CustomLoginSerializer(LoginSerializer):
         password = attrs.get('password')
         
         if username and password:
-            # Try to get the user first to check if account exists and is active
-            try:
-                user = User.objects.get(email=username)
-                if not user.is_active:
+            # First, try to authenticate the user
+            user = authenticate(request=self.context.get('request'), username=username, password=password)
+            
+            # If authentication fails, check if user exists and password is correct
+            # This handles the case where user is inactive (authenticate returns None for inactive users)
+            if not user:
+                try:
+                    # Try to get the user by email to check if account exists
+                    user = User.objects.get(email=username)
+                    # Check if password is correct
+                    if user.check_password(password):
+                        # Password is correct but user is inactive
+                        if not user.is_active:
+                            # Special message for inactive client accounts
+                            if user.role == 'client':
+                                raise serializers.ValidationError(
+                                    'Votre compte client est en cours d\'examen par les administrateurs. Vous serez notifié dès que votre compte sera activé.'
+                                )
+                            else:
+                                raise serializers.ValidationError(
+                                    'Votre compte n\'est pas encore activé. Un administrateur vous contactera dès que votre compte sera approuvé.'
+                                )
+                        else:
+                            # Password correct but authentication failed for other reason
+                            raise serializers.ValidationError('Identifiants incorrects.')
+                    else:
+                        # Password is wrong
+                        raise serializers.ValidationError('Identifiants incorrects.')
+                except User.DoesNotExist:
+                    # User doesn't exist
+                    raise serializers.ValidationError('Identifiants incorrects.')
+            
+            # If we get here, user is authenticated and active
+            if not user.is_active:
+                # Double check (shouldn't reach here if logic above is correct)
+                if user.role == 'client':
+                    raise serializers.ValidationError(
+                        'Votre compte client est en cours d\'examen par les administrateurs. Vous serez notifié dès que votre compte sera activé.'
+                    )
+                else:
                     raise serializers.ValidationError(
                         'Votre compte n\'est pas encore activé. Un administrateur vous contactera dès que votre compte sera approuvé.'
                     )
-            except User.DoesNotExist:
-                pass  # Let authenticate handle invalid credentials
-            
-            # Authenticate the user
-            user = authenticate(request=self.context.get('request'), username=username, password=password)
-            
-            if not user:
-                raise serializers.ValidationError('Identifiants incorrects.')
-            
-            if not user.is_active:
-                raise serializers.ValidationError(
-                    'Votre compte n\'est pas encore activé. Un administrateur vous contactera dès que votre compte sera approuvé.'
-                )
             
             attrs['user'] = user
             return attrs
@@ -148,7 +171,7 @@ class CustomLoginSerializer(LoginSerializer):
 class RegistrationSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
-    role = serializers.CharField(write_only=True, required=False)
+    role = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -163,17 +186,25 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         if attrs['password1'] != attrs['password2']:
             raise serializers.ValidationError({'password': 'Les mots de passe ne correspondent pas.'})
         
         # Determine role based on provided fields or explicit role parameter
-        role = attrs.get('role')
+        role = attrs.get('role', '').strip() if attrs.get('role') else ''
+        logger.info(f"RegistrationSerializer.validate - Received role: '{role}'")
+        logger.info(f"RegistrationSerializer.validate - All attrs keys: {list(attrs.keys())}")
+        
         if not role:
             # If enterprise fields are provided, it's a client registration
             if attrs.get('enterprise_name') or attrs.get('address') or attrs.get('phone_number'):
                 role = 'client'
+                logger.info("RegistrationSerializer.validate - Determined role as 'client' from enterprise fields")
             else:
                 role = 'user'
+                logger.info("RegistrationSerializer.validate - Determined role as 'user' (default)")
         
         # Validate role
         valid_roles = ['client', 'user']
@@ -181,20 +212,49 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'role': f'Le rôle doit être l\'un des suivants: {", ".join(valid_roles)}'})
         
         attrs['role'] = role
+        logger.info(f"RegistrationSerializer.validate - Final role set in attrs: '{attrs['role']}'")
         return attrs
 
     def create(self, validated_data):
-        role = validated_data.pop('role', 'user')
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Extract role from validated_data BEFORE popping other fields
+        role = validated_data.get('role', '').strip() if validated_data.get('role') else ''
+        logger.info(f"RegistrationSerializer.create - Initial role from validated_data: '{role}'")
+        logger.info(f"RegistrationSerializer.create - Full validated_data keys: {list(validated_data.keys())}")
+        
+        if not role:
+            # Fallback: determine from enterprise fields
+            if validated_data.get('enterprise_name') or validated_data.get('address') or validated_data.get('phone_number'):
+                role = 'client'
+                logger.info("RegistrationSerializer.create - Determined role as 'client' from enterprise fields")
+            else:
+                role = 'user'
+                logger.info("RegistrationSerializer.create - Determined role as 'user' (default)")
+        
+        logger.info(f"RegistrationSerializer.create - Final role to use: '{role}'")
+        
+        # Remove role from validated_data so it doesn't get passed as a model field
+        validated_data.pop('role', None)
         
         # Create user with specified role
         # Clients are inactive by default, users are active
         is_active = role == 'user'
         
+        # Remove password fields before creating user
+        password = validated_data.pop('password1')
+        validated_data.pop('password2', None)
+        
+        logger.info(f"RegistrationSerializer.create - Creating user with role='{role}', is_active={is_active}")
+        
+        # Create user with role explicitly set
+        # Note: create_user expects email as first positional arg (USERNAME_FIELD = 'email')
         user = User.objects.create_user(
+            validated_data['email'],  # email is the first positional argument
+            password=password,
             username=validated_data.get('username'),
-            email=validated_data['email'],
-            password=validated_data['password1'],
-            role=role,
+            role=role,  # Explicitly set role
             is_active=is_active,
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
@@ -202,6 +262,16 @@ class RegistrationSerializer(serializers.ModelSerializer):
             address=validated_data.get('address', ''),
             phone_number=validated_data.get('phone_number', ''),
         )
+        
+        logger.info(f"RegistrationSerializer.create - User created with ID {user.id}, role='{user.role}'")
+        
+        # Ensure role is set (double-check)
+        if user.role != role:
+            logger.warning(f"RegistrationSerializer.create - Role mismatch! Expected '{role}', got '{user.role}'. Fixing...")
+            user.role = role
+            user.save(update_fields=['role'])
+            logger.info(f"RegistrationSerializer.create - Role fixed to '{user.role}'")
+        
         return user
 
 

@@ -64,23 +64,133 @@ function CSVUploadContent() {
         <div className="bg-white shadow rounded-lg p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Importer des produits depuis CSV</h1>
 
-          <div className="mb-6 rounded-md bg-blue-50 p-4 text-blue-800">
-            <h2 className="font-semibold mb-2">Format requis (CSV ou Excel):</h2>
-            <p className="text-sm mb-2">Le fichier CSV ou Excel (.xlsx, .xls) doit contenir les colonnes suivantes:</p>
-            <ul className="text-sm list-disc list-inside space-y-1">
-              <li><strong>name</strong> (requis) - Nom du produit</li>
-              <li><strong>description</strong> - Description du produit</li>
-              <li><strong>brand</strong> - Marque</li>
-              <li><strong>category</strong> - Nom de la catégorie</li>
-              <li><strong>image</strong> - URL de l&apos;image</li>
-              <li><strong>price</strong> - Prix en MAD</li>
-              <li><strong>merchant</strong> - Nom du marchand</li>
-              <li><strong>url</strong> - URL du produit</li>
-              <li><strong>tags</strong> - Tags séparés par des virgules</li>
-            </ul>
-            <p className="text-sm mt-2">
-              <strong>Note:</strong> Les produits créés par les clients nécessitent une approbation admin.
-            </p>
+          <div className="mb-6 space-y-4">
+            <div className="rounded-md bg-blue-50 p-4 text-blue-800">
+              <h2 className="font-semibold mb-3 text-lg">Guide d&apos;import CSV/Excel</h2>
+              <p className="text-sm mb-4">
+                Le fichier CSV ou Excel (.xlsx, .xls) doit contenir les colonnes suivantes. 
+                Assurez-vous que la première ligne contient les en-têtes de colonnes.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <h3 className="font-semibold text-base mb-1">
+                    <span className="text-red-600">*</span> name (REQUIS)
+                  </h3>
+                  <p className="text-sm mb-2">Nom du produit</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Doit être unique et descriptif</li>
+                    <li>Exemple: &quot;Ordinateur portable HP Pavilion 15&quot;</li>
+                    <li>Ne peut pas être vide</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">description (Optionnel)</h3>
+                  <p className="text-sm mb-2">Description détaillée du produit</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Peut contenir plusieurs phrases</li>
+                    <li>Décrivez les caractéristiques principales</li>
+                    <li>Exemple: &quot;Ordinateur portable avec processeur Intel Core i5, 8GB RAM, 256GB SSD&quot;</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">brand (Optionnel)</h3>
+                  <p className="text-sm mb-2">Marque du produit</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Nom de la marque (ex: HP, Dell, Samsung, Apple)</li>
+                    <li>Utilisez des noms cohérents pour la même marque</li>
+                    <li>Exemple: &quot;HP&quot; ou &quot;Hewlett-Packard&quot;</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">category (Optionnel)</h3>
+                  <p className="text-sm mb-2">Nom de la catégorie principale</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>La catégorie sera créée automatiquement si elle n&apos;existe pas</li>
+                    <li>Utilisez des noms de catégories cohérents</li>
+                    <li>Exemples: &quot;Informatique&quot;, &quot;Électronique&quot;, &quot;Téléphonie&quot;</li>
+                    <li>Respectez la casse et l&apos;orthographe</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">image (Optionnel)</h3>
+                  <p className="text-sm mb-2">URL complète de l&apos;image du produit</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Doit être une URL valide commençant par http:// ou https://</li>
+                    <li>L&apos;image doit être accessible publiquement</li>
+                    <li>Exemple: &quot;https://example.com/images/product.jpg&quot;</li>
+                    <li>Évitez les URLs avec espaces ou caractères spéciaux</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">price (Optionnel, mais requis pour créer une offre)</h3>
+                  <p className="text-sm mb-2">Prix en Dirhams Marocains (MAD)</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Format: nombre décimal (utilisez un point pour les décimales)</li>
+                    <li>Les symboles &quot;DH&quot;, &quot;MAD&quot; et les virgules seront automatiquement supprimés</li>
+                    <li>Exemples valides: &quot;1299.99&quot;, &quot;1,299.99&quot;, &quot;1299.99 MAD&quot;</li>
+                    <li>Si le prix est fourni, le champ &quot;merchant&quot; devient également requis</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">merchant (Optionnel, mais requis si prix fourni)</h3>
+                  <p className="text-sm mb-2">Nom du marchand/vendeur</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Le marchand sera créé automatiquement s&apos;il n&apos;existe pas</li>
+                    <li>Utilisez des noms cohérents pour le même marchand</li>
+                    <li>Exemples: &quot;ElectroPlanet&quot;, &quot;Jumia&quot;, &quot;Avito&quot;</li>
+                    <li>Requis si vous fournissez un prix (pour créer une offre de prix)</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">url (Optionnel)</h3>
+                  <p className="text-sm mb-2">URL du produit sur le site du marchand</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>URL complète vers la page du produit</li>
+                    <li>Doit commencer par http:// ou https://</li>
+                    <li>Exemple: &quot;https://www.jumia.ma/product-123.html&quot;</li>
+                    <li>Utilisé pour créer l&apos;offre de prix si prix et merchant sont fournis</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-gray-300 pl-4">
+                  <h3 className="font-semibold text-base mb-1">tags (Optionnel)</h3>
+                  <p className="text-sm mb-2">Tags pour faciliter la recherche</p>
+                  <ul className="text-xs list-disc list-inside space-y-1 text-blue-700">
+                    <li>Séparez les tags par des virgules</li>
+                    <li>Pas d&apos;espaces après les virgules recommandé</li>
+                    <li>Exemple: &quot;portable,gaming,intel,ssd&quot;</li>
+                    <li>Les espaces en début/fin seront automatiquement supprimés</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-sm font-semibold text-yellow-800 mb-1">⚠️ Notes importantes:</p>
+                <ul className="text-xs list-disc list-inside space-y-1 text-yellow-700">
+                  <li>Les produits créés par les clients nécessitent une approbation admin avant d&apos;être visibles publiquement</li>
+                  <li>Les colonnes peuvent être dans n&apos;importe quel ordre, mais les noms doivent correspondre exactement</li>
+                  <li>Les lignes vides seront ignorées</li>
+                  <li>Pour créer une offre de prix, vous devez fournir à la fois &quot;price&quot; et &quot;merchant&quot;</li>
+                  <li>Les erreurs seront affichées avec le numéro de ligne pour faciliter la correction</li>
+                </ul>
+              </div>
+
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+                <p className="text-sm font-semibold text-green-800 mb-2">📋 Exemple de ligne CSV:</p>
+                <pre className="text-xs bg-white p-2 rounded border overflow-x-auto text-green-700">
+{`name,description,brand,category,image,price,merchant,url,tags
+"Ordinateur HP Pavilion 15","PC portable avec Intel i5, 8GB RAM","HP","Informatique","https://example.com/hp.jpg",4999.99,"ElectroPlanet","https://electroplanet.ma/product-123","portable,gaming,intel"`}
+                </pre>
+              </div>
+            </div>
           </div>
 
           {error && (

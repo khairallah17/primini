@@ -12,12 +12,30 @@ class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         if not email:
             raise ValueError('L\'adresse e-mail doit être renseignée.')
         email = self.normalize_email(email)
+        
+        # Extract role from extra_fields to ensure it's set explicitly
+        role = extra_fields.pop('role', None)
+        logger.info(f"UserManager._create_user - Extracted role from extra_fields: '{role}'")
+        logger.info(f"UserManager._create_user - Remaining extra_fields keys: {list(extra_fields.keys())}")
+        
         user = self.model(email=email, **extra_fields)
+        
+        # Explicitly set role if provided (this overrides the default)
+        if role:
+            user.role = role
+            logger.info(f"UserManager._create_user - Explicitly set user.role to '{user.role}'")
+        else:
+            logger.warning(f"UserManager._create_user - No role provided, user will have default role: '{user.role}'")
+        
         user.set_password(password)
         user.save(using=self._db)
+        logger.info(f"UserManager._create_user - User saved with final role: '{user.role}'")
         return user
 
     def create_user(self, email, password=None, **extra_fields):

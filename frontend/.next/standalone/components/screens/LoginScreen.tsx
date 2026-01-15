@@ -50,14 +50,8 @@ export default function LoginScreen() {
           errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
         }
         
-        // Check if the error indicates an inactive account
-        const errorLower = errorMessage.toLowerCase();
-        if (errorLower.includes('inactive') || errorLower.includes('désactivé') || 
-            errorLower.includes('non actif') || errorLower.includes('non activé')) {
-          setApiError('Votre compte n\'est pas encore activé. Un administrateur vous contactera dès que votre compte sera approuvé.');
-        } else {
-          setApiError(errorMessage);
-        }
+        // Display the error message from backend (which includes specific message for inactive clients)
+        setApiError(errorMessage);
       } else {
         setApiError('Une erreur est survenue. Veuillez réessayer.');
       }

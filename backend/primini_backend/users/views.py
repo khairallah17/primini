@@ -1,4 +1,5 @@
 from dj_rest_auth.views import UserDetailsView
+from dj_rest_auth.registration.views import RegisterView
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -9,7 +10,7 @@ from .models import User
 from .serializers import (
     UserSerializer, UserListSerializer, UserDetailSerializer,
     PasswordResetRequestSerializer, PasswordResetVerifyOTPSerializer,
-    PasswordResetSerializer
+    PasswordResetSerializer, RegistrationSerializer
 )
 from .permissions import IsAdmin
 from primini_backend.pagination import CustomPageNumberPagination
@@ -22,6 +23,32 @@ class CustomUserDetailsView(UserDetailsView):
     doesn't pick it up from settings.
     """
     serializer_class = UserSerializer
+
+
+class CustomRegisterView(RegisterView):
+    """
+    Custom registration view that explicitly uses our RegistrationSerializer.
+    This ensures the role field is properly handled during registration.
+    """
+    serializer_class = RegistrationSerializer
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Override post to ensure our serializer's create method is called correctly.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        # Generate token for the user
+        from rest_framework.authtoken.models import Token
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # Return response similar to dj-rest-auth's default response
+        return Response({
+            'user': self.get_serializer(user).data,
+            'token': token.key
+        }, status=status.HTTP_201_CREATED)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):

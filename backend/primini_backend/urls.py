@@ -29,7 +29,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/auth/user/', user_views.CustomUserDetailsView.as_view(), name='rest_user_details'),
     path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('api/auth/registration/', user_views.CustomRegisterView.as_view(), name='rest_register'),
     path('api/auth/password/reset/request/', user_views.password_reset_request, name='password_reset_request'),
     path('api/auth/password/reset/verify/', user_views.password_reset_verify_otp, name='password_reset_verify'),
     path('api/auth/password/reset/', user_views.password_reset, name='password_reset'),
