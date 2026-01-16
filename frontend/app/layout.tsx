@@ -7,7 +7,12 @@ import ConditionalHeaderFooter from '../components/layouts/ConditionalHeaderFoot
 export const metadata: Metadata = {
   title: 'Avita — Comparateur de prix high-tech au Maroc',
   description:
-    'Comparez les prix des smartphones, TV, électroménagers et produits high-tech au Maroc sur Avita.'
+    'Comparez les prix des smartphones, TV, électroménagers et produits high-tech au Maroc sur Avita.',
+  icons: {
+    icon: '/images/avito-colors.jpeg',
+    shortcut: '/images/avito-colors.jpeg',
+    apple: '/images/avito-colors.jpeg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

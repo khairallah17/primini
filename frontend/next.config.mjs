@@ -25,7 +25,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'api.azyo6271.odns.fr',
+        hostname: 'api.avita.ma',
         port: '',
         pathname: '/media/**',
       },
