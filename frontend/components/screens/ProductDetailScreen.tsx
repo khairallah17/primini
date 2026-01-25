@@ -303,9 +303,9 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
       </div>
 
       {/* Images and Description Section */}
-      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr,1.2fr] lg:items-start">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr,1.2fr] lg:items-start min-w-0" style={{ width: '100%', maxWidth: '100%' }}>
         {/* Left Column - Image Gallery */}
-        <div className="w-full order-1">
+        <div className="w-full order-1 min-w-0" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
           <ProductImageGallery
             images={
               product.images && product.images.length > 0
@@ -428,72 +428,115 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
                   {visibleOffers.map((offer: PriceOffer) => (
                     <div
                       key={offer.id}
-                      className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
                     >
-                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            {offer.merchant?.logo_display || offer.merchant?.logo ? (
-                              <img
-                                src={offer.merchant.logo_display || offer.merchant.logo}
-                                alt={offer.merchant.name || 'Merchant logo'}
-                                className="h-5 md:h-6 w-auto object-contain max-w-[100px] md:max-w-[120px] flex-shrink-0"
-                                onError={(e) => {
-                                  // Show merchant name if logo fails to load
-                                  const nameElement = e.currentTarget.nextElementSibling as HTMLElement;
-                                  if (nameElement) {
-                                    nameElement.style.display = 'block';
-                                  }
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            ) : null}
-                            <h3 
-                              className={`font-semibold text-slate-900 text-sm md:text-base ${
-                                (offer.merchant?.logo_display || offer.merchant?.logo) ? 'hidden' : ''
-                              }`}
-                            >
+                      {/* Top Row - Chevron and Merchant Logo */}
+                      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                        {/* Chevron Icon */}
+                        <button className="text-slate-900 hover:text-slate-700 transition-colors flex-shrink-0">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        
+                        {/* Merchant Logo */}
+                        {offer.merchant?.logo_display || offer.merchant?.logo ? (
+                          <img
+                            src={offer.merchant.logo_display || offer.merchant.logo}
+                            alt={offer.merchant.name || 'Merchant logo'}
+                            className="h-8 sm:h-10 w-auto object-contain max-w-[120px] sm:max-w-[150px] flex-shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="h-8 sm:h-10 px-3 flex items-center bg-slate-100 rounded flex-shrink-0">
+                            <span className="text-xs sm:text-sm font-semibold text-slate-700 whitespace-nowrap">
                               {offer.merchant?.name || 'Merchant'}
-                            </h3>
+                            </span>
                           </div>
-                          <p className="text-xs md:text-sm text-slate-600 font-medium mb-3 line-clamp-2">
+                        )}
+                      </div>
+
+                      {/* Bottom Row - Product Name, Status, Price, Button */}
+                      <div className="flex items-center justify-between gap-2 sm:gap-4 overflow-hidden">
+                        {/* Left: Product Name and Stock Status */}
+                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 overflow-hidden">
+                          {/* Product Name */}
+                          <h3 className="text-xs sm:text-sm md:text-base font-semibold text-primary hover:text-primary/90 line-clamp-1 flex-shrink-0 w-[60px] sm:w-auto">
                             {product.name}
-                          </p>
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                            <span className={`font-semibold text-xs md:text-sm ${
-                              offer.stock_status === 'in_stock' ? 'text-green-600' :
-                              offer.stock_status === 'out_of_stock' ? 'text-red-600' :
-                              'text-yellow-600'
-                            }`}>
-                              {offer.stock_status === 'in_stock' ? 'En stock' :
-                               offer.stock_status === 'low_stock' ? 'Stock faible' :
-                               offer.stock_status === 'out_of_stock' ? 'Hors stock' :
-                               offer.stock_status}
-                            </span>
-                            <span className="font-bold text-base md:text-lg text-primary">
-                              {formatCurrency(offer.price)}
-                            </span>
-                            {offer.date_updated && (
-                              <span className="text-xs text-slate-500">
-                                {formatDate(offer.date_updated)}*
-                              </span>
+                          </h3>
+                          
+                          {/* Stock Status with Icon */}
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {offer.stock_status === 'in_stock' ? (
+                              <>
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-medium text-green-600 whitespace-nowrap hidden sm:inline">En stock</span>
+                              </>
+                            ) : offer.stock_status === 'low_stock' ? (
+                              <>
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-medium text-yellow-600 whitespace-nowrap hidden sm:inline">Stock faible</span>
+                              </>
+                            ) : offer.stock_status === 'preorder' ? (
+                              <>
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z" />
+                                  <path fillRule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-medium text-green-600 whitespace-nowrap hidden sm:inline">Précommande</span>
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                <span className="text-xs font-medium text-red-600 whitespace-nowrap hidden sm:inline">Hors stock</span>
+                              </>
                             )}
                           </div>
+                        </div>
+
+                        {/* Middle: Price and Date (stacked vertically) */}
+                        <div className="flex flex-col items-end flex-shrink-0">
+                          <span className="font-bold text-base sm:text-xl md:text-2xl text-slate-900 whitespace-nowrap">
+                            {formatCurrency(offer.price)}
+                          </span>
                           {offer.date_updated && (
-                            <p className="text-xs text-slate-500 mt-1">
-                              *Date de la dernière mise à jour du prix
-                            </p>
+                            <span className="text-[10px] sm:text-xs text-slate-500 mt-0.5 whitespace-nowrap">
+                              {formatDate(offer.date_updated)}*
+                            </span>
                           )}
                         </div>
-                        <a
-                          href={offer.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 bg-primary text-white text-xs sm:text-sm font-semibold rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap text-center flex-shrink-0 w-full sm:w-auto"
-                        >
-                          Voir l&apos;offre
-                        </a>
+
+                        {/* Right: CTA Button */}
+                        <div className="flex-shrink-0">
+                          <a
+                            href={offer.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 sm:gap-1.5 px-4 sm:px-6 py-2 sm:py-3 bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base font-semibold rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            <span className="hidden sm:inline">Voir l&apos;offre</span>
+                            <span className="sm:hidden">Voir</span>
+                            <svg className="w-4 h-4 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </a>
+                        </div>
                       </div>
+                      
+                      {/* Date Note */}
+                      {offer.date_updated && (
+                        <p className="text-xs text-slate-500 mt-2">
+                          *Date de la dernière mise à jour du prix
+                        </p>
+                      )}
                     </div>
                     ))}
 

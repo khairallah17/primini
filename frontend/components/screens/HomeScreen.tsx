@@ -5,6 +5,16 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FormEvent } from 'react';
+import { 
+  FaMobileAlt, 
+  FaLaptop, 
+  FaTv, 
+  FaBlender, 
+  FaFilm, 
+  FaCamera, 
+  FaLeaf,
+  FaBox
+} from 'react-icons/fa';
 import ProductCard, { ProductSummary } from '../../components/ProductCard';
 import api from '../../lib/apiClient';
 import { getProductsWithDescription } from '../../lib/productApi';
@@ -109,21 +119,12 @@ export default function HomeScreen() {
       {showLoader && (
         <HomeLoader isLoading={isContentLoading} onComplete={handleLoaderComplete} />
       )}
-      <div className="space-y-16">
-      <section className="relative grid gap-10 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-10 py-16 text-white shadow-xl md:grid-cols-[1.1fr,1fr]">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80)'
-          }}
-        />
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-6 sm:px-10 py-16 text-white shadow-xl -mt-10" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}>
         {/* Gradient Overlay */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/60 via-primary/50 to-primary-dark/60" />
         
         {/* Content */}
-        <div className="relative z-10 space-y-6">
-          <p className="text-sm uppercase tracking-wider text-white/60">Comparateur intelligent</p>
+        <div className="relative z-10 space-y-6 container mx-auto max-w-[70%] w-[70%]">
           <h1 className="text-4xl font-semibold leading-snug">
             Trouvez le meilleur prix pour vos produits high-tech préférés.
           </h1>
@@ -149,18 +150,9 @@ export default function HomeScreen() {
             </button>
           </form>
         </div>
-        <div className="relative z-10 flex flex-col justify-end gap-4 text-sm text-white/80">
-          <div className="rounded-3xl bg-white/10 p-6 backdrop-blur">
-            <h2 className="text-lg font-semibold text-white">Les chiffres clés</h2>
-            <ul className="mt-4 space-y-3">
-              <li>+3000 produits suivis en temps réel</li>
-              <li>+40 marchands référencés</li>
-              <li>Alertes personnalisées gratuites</li>
-            </ul>
-          </div>
-        </div>
       </section>
 
+      <div className="space-y-16">
       <div className="flex justify-center">
         <AdSense slot="homepage_top" className="my-8" />
       </div>
@@ -170,11 +162,15 @@ export default function HomeScreen() {
           <h2 className="text-3xl font-semibold text-slate-800">Parcourir par catégorie</h2>
           <p className="mt-2 text-sm text-slate-500">Explorez nos catégories pour trouver les meilleurs produits</p>
         </header>
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {loading && categories.length === 0 && <CategorySkeleton />}
-          {categories.map((category) => (
-            <CategoryCard key={category.slug} category={category} />
-          ))}
+        <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+          <div className="flex items-center gap-4 sm:gap-6 min-w-max flex-nowrap">
+            {loading && categories.length === 0 && <CategorySkeleton />}
+            {categories
+              .filter((category) => category.name.toLowerCase() !== 'autre')
+              .map((category) => (
+                <CategoryCard key={category.slug} category={category} />
+              ))}
+          </div>
         </div>
       </section>
 
@@ -206,40 +202,64 @@ export default function HomeScreen() {
       <div className="flex justify-center">
         <AdSense slot="homepage_bottom" className="my-8" />
       </div>
-    </div>
+      </div>
     </>
   );
 }
 
-function CategoryCard({ category }: { category: Category }) {
-  const [imageError, setImageError] = useState(false);
-  const categoryImage = getCategoryImage(category.name) || category.icon;
+// Function to get category icon from react-icons based on category name
+function getCategoryIcon(categoryName: string) {
+  const normalizedName = categoryName.toLowerCase().trim();
+  
+  // Smartphones
+  if (normalizedName.includes('smartphone') || normalizedName.includes('téléphonie') || normalizedName.includes('telephonie')) {
+    return <FaMobileAlt className="w-12 h-12" />;
+  }
+  
+  // Informatique
+  if (normalizedName.includes('informatique') || normalizedName.includes('ordinateur') || normalizedName.includes('laptop')) {
+    return <FaLaptop className="w-12 h-12" />;
+  }
+  
+  // Électroménager
+  if ((normalizedName.includes('électroménager') || normalizedName.includes('electromenager')) && !normalizedName.includes('petit')) {
+    return <FaTv className="w-12 h-12" />;
+  }
+  
+  // Petit Électroménager
+  if (normalizedName.includes('petit') && (normalizedName.includes('électroménager') || normalizedName.includes('electromenager'))) {
+    return <FaBlender className="w-12 h-12" />;
+  }
+  
+  // Image & Son
+  if (normalizedName.includes('image') && normalizedName.includes('son')) {
+    return <FaFilm className="w-12 h-12" />;
+  }
+  
+  // Photo & Caméra
+  if (normalizedName.includes('photo') || normalizedName.includes('caméra') || normalizedName.includes('camera')) {
+    return <FaCamera className="w-12 h-12" />;
+  }
+  
+  // Santé - Beauté
+  if (normalizedName.includes('santé') || normalizedName.includes('sante') || normalizedName.includes('beauté') || normalizedName.includes('beaute')) {
+    return <FaLeaf className="w-12 h-12" />;
+  }
+  
+  // Default icon
+  return <FaBox className="w-12 h-12" />;
+}
 
+function CategoryCard({ category }: { category: Category }) {
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="group relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm transition-all hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl"
+      className="group flex flex-col items-center justify-center p-4 sm:p-6 transition-all hover:scale-105 flex-shrink-0"
     >
-      {categoryImage && !imageError ? (
-        <div className="relative mb-4 h-16 w-16">
-          <Image 
-            src={categoryImage} 
-            alt={category.name}
-            width={64}
-            height={64}
-            className="object-contain"
-            onError={() => setImageError(true)}
-            unoptimized={true}
-          />
-        </div>
-      ) : (
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
-          <span className="text-2xl font-bold text-primary">
-            {category.name.charAt(0)}
-          </span>
-        </div>
-      )}
-      <h3 className="text-center text-base font-semibold text-slate-800 transition-colors group-hover:text-primary">
+      <div className="mb-3 text-primary group-hover:text-primary/80 transition-colors">
+        {getCategoryIcon(category.name)}
+      </div>
+      <h3 className="text-sm sm:text-base font-semibold text-slate-800 group-hover:text-primary transition-colors text-center whitespace-nowrap">
         {category.name}
       </h3>
     </Link>
@@ -249,10 +269,10 @@ function CategoryCard({ category }: { category: Category }) {
 function CategorySkeleton() {
   return (
     <>
-      {Array.from({ length: 8 }).map((_, index) => (
-        <div key={index} className="flex h-40 animate-pulse flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 p-8">
-          <div className="mb-4 h-16 w-16 rounded-full bg-slate-300" />
-          <div className="h-4 w-24 rounded bg-slate-300" />
+      {Array.from({ length: 7 }).map((_, index) => (
+        <div key={index} className="flex animate-pulse flex-col items-center justify-center p-4 sm:p-6 flex-shrink-0">
+          <div className="mb-3 h-12 w-12 rounded bg-slate-300" />
+          <div className="h-4 w-20 rounded bg-slate-300" />
         </div>
       ))}
     </>

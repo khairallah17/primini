@@ -134,16 +134,16 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-primary sticky top-0 z-50 shadow-lg">
+    <header className="bg-white sticky top-0 z-50 shadow-lg">
       {/* Top Navigation Bar */}
-      <div className="border-b border-primary-dark/30 bg-primary-dark/20">
+      <div className="border-b border-gray-200 bg-gray-50">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
-          <nav className="hidden items-center gap-6 text-xs font-medium text-white/80 md:flex">
+          <nav className="hidden items-center gap-6 text-xs font-medium text-primary/80 md:flex">
             {topNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="transition-colors hover:text-white"
+                className="transition-colors hover:text-primary"
               >
                 {link.label}
               </Link>
@@ -156,7 +156,7 @@ export default function Header() {
                 href="https://www.facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/80 hover:text-white transition-colors"
+                className="text-primary/80 hover:text-primary transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -167,7 +167,7 @@ export default function Header() {
                 href="https://www.instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/80 hover:text-white transition-colors"
+                className="text-primary/80 hover:text-primary transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -178,7 +178,7 @@ export default function Header() {
                 href="https://www.linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/80 hover:text-white transition-colors"
+                className="text-primary/80 hover:text-primary transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@ export default function Header() {
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/80 hover:text-white transition-colors"
+                className="text-primary/80 hover:text-primary transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -200,13 +200,13 @@ export default function Header() {
             
             <div className="flex items-center gap-4 text-xs">
               {loading ? (
-                <span className="text-white/60">Chargement...</span>
+                <span className="text-primary/60">Chargement...</span>
               ) : user ? (
                 // Only show dashboard link for admin or client, not for 'user' role
                 (isAdmin || isClient) ? (
                   <Link
                     href={isAdmin ? '/admin' : '/dashboard'}
-                    className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+                    className="flex items-center gap-2 text-primary/90 hover:text-primary transition-colors"
                   >
                     <span className="hidden sm:inline">
                       {isAdmin ? 'Mon Tableau de bord' : 'Mon Tableau de bord'}
@@ -217,7 +217,7 @@ export default function Header() {
               ) : (
                 <Link
                   href="/login"
-                  className="text-white/90 hover:text-white transition-colors"
+                  className="text-primary/90 hover:text-primary transition-colors"
                 >
                   Connexion
                 </Link>
@@ -228,12 +228,12 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="border-b border-primary-dark/30">
+      <div className="border-b border-gray-200">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Image
-              src="/images/avito-colors.jpeg"
+              src="/images/avita-logo-white-bg.png"
               alt="Avita"
               width={320}
               height={320}
@@ -251,10 +251,10 @@ export default function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un produit..."
-                className="w-full rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/60 focus:border-white/40 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               <svg
-                className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/60"
+                className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -270,7 +270,7 @@ export default function Header() {
             <div className="relative" ref={favoritesRef}>
               <button
                 onClick={() => setFavoritesOpen(!favoritesOpen)}
-                className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-3 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors"
+                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-primary hover:bg-gray-100 transition-colors"
                 type="button"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -334,13 +334,13 @@ export default function Header() {
 
             {/* User Account */}
             {loading ? (
-              <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
+              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
             ) : user ? (
               <div className="flex items-center gap-3">
                 {isAdmin ? (
                   <Link
                     href="/admin"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white text-sm font-semibold transition-colors hover:bg-white/30"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold transition-colors hover:bg-primary/90"
                     title="Aller au tableau de bord admin"
                   >
                     {(user.first_name?.[0] || user.username?.[0] || user.email[0] || 'U').toUpperCase()}
@@ -348,28 +348,28 @@ export default function Header() {
                 ) : isClient ? (
                   <Link
                     href="/dashboard"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white text-sm font-semibold transition-colors hover:bg-white/30"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold transition-colors hover:bg-primary/90"
                   >
                     {(user.first_name?.[0] || user.username?.[0] || user.email[0] || 'U').toUpperCase()}
                   </Link>
                 ) : (
                   // 'user' role - no dashboard access, just show avatar without link
                   <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white text-sm font-semibold"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold"
                     title="Compte utilisateur"
                   >
                     {(user.first_name?.[0] || user.username?.[0] || user.email[0] || 'U').toUpperCase()}
                   </div>
                 )}
                 <div className="hidden lg:block">
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-primary">
                     {user.first_name && user.last_name
                       ? `${user.first_name} ${user.last_name}`
                       : user.username || 'Mon compte'}
                   </p>
                   <button
                     onClick={handleLogout}
-                    className="text-xs text-white/70 hover:text-white transition-colors"
+                    className="text-xs text-primary/70 hover:text-primary transition-colors"
                   >
                     Déconnexion
                   </button>
@@ -379,7 +379,7 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className="hidden rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white hover:bg-white/20 transition-colors sm:inline-block"
+                  className="hidden rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-primary hover:bg-gray-100 transition-colors sm:inline-block"
                 >
                   Connexion
                 </Link>
@@ -397,7 +397,7 @@ export default function Header() {
           <button
             data-mobile-menu-button
             onClick={() => setMobileSidebarOpen(true)}
-            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-white hover:bg-white/20 transition-colors"
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-primary hover:bg-gray-100 transition-colors"
             aria-label="Ouvrir le menu"
             type="button"
           >
@@ -407,7 +407,7 @@ export default function Header() {
       </div>
 
       {/* Category Navigation */}
-      <div className="border-b border-primary-dark/30 bg-primary-dark/10 relative">
+      <div className="border-b border-gray-200 bg-gray-50 relative">
         <div className="mx-auto max-w-7xl px-6">
           <nav className="flex items-center gap-6 overflow-x-auto py-3 scrollbar-hide">
             {/* Bons plans link */}
@@ -415,8 +415,8 @@ export default function Header() {
               href="/deals"
               className={`whitespace-nowrap text-sm font-medium transition-colors ${
                 pathname.startsWith('/deals')
-                  ? 'text-white border-b-2 border-secondary pb-1'
-                  : 'text-white/80 hover:text-white'
+                  ? 'text-primary border-b-2 border-secondary pb-1'
+                  : 'text-primary/80 hover:text-primary'
               }`}
             >
               Bons plans
@@ -430,8 +430,8 @@ export default function Header() {
               <button
                 className={`whitespace-nowrap text-sm font-medium transition-colors flex items-center gap-1 ${
                   categoriesOpen || pathname.startsWith('/categories')
-                    ? 'text-white border-b-2 border-secondary pb-1'
-                    : 'text-white/80 hover:text-white'
+                    ? 'text-primary border-b-2 border-secondary pb-1'
+                    : 'text-primary/80 hover:text-primary'
                 }`}
                 type="button"
               >
@@ -465,14 +465,14 @@ export default function Header() {
             className="fixed left-0 top-0 h-full w-full max-w-sm bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-in-out lg:hidden overflow-y-auto"
           >
             {/* Sidebar Header */}
-            <div className="sticky top-0 bg-primary p-4 flex items-center justify-between border-b border-primary-dark/30 z-10">
+            <div className="sticky top-0 bg-white p-4 flex items-center justify-between border-b border-gray-200 z-10">
               <Link 
                 href="/" 
                 onClick={() => setMobileSidebarOpen(false)}
                 className="flex-shrink-0"
               >
                 <Image
-                  src="/images/avito-colors.jpeg"
+                  src="/images/avita-logo-white-bg.png"
                   alt="Avita"
                   width={320}
                   height={320}
@@ -483,7 +483,7 @@ export default function Header() {
               </Link>
               <button
                 onClick={() => setMobileSidebarOpen(false)}
-                className="flex items-center justify-center w-10 h-10 rounded-lg text-white hover:bg-white/20 transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg text-primary hover:bg-gray-100 transition-colors"
                 aria-label="Fermer le menu"
                 type="button"
               >

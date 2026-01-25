@@ -19,8 +19,11 @@ const ProductImageGallery = forwardRef<HTMLDivElement, ProductImageGalleryProps>
 
     if (images.length === 0) {
       return (
-        <div ref={ref} className="w-full flex flex-col items-center">
-          <div className="relative aspect-[4/3] w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200">
+        <div ref={ref} className="w-full flex flex-col items-center min-w-0" style={{ width: '100%', maxWidth: '100%' }}>
+          <div 
+            className="relative aspect-[4/3] w-full flex items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200" 
+            style={{ width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}
+          >
             <span className="text-sm font-medium text-slate-400">Image non disponible</span>
           </div>
         </div>
@@ -39,12 +42,28 @@ const ProductImageGallery = forwardRef<HTMLDivElement, ProductImageGalleryProps>
     };
 
     return (
-      <div ref={ref} className="w-full flex flex-col items-center">
+      <div ref={ref} className="w-full flex flex-col items-center min-w-0" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
         {/* Main Image Container */}
-        <div className="relative aspect-[4/3] w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl overflow-hidden rounded-xl sm:rounded-2xl bg-slate-100 mb-3 sm:mb-4 group">
+        <div 
+          className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-100 mb-3 sm:mb-4 group" 
+          style={{ 
+            width: '100%', 
+            maxWidth: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
+            aspectRatio: '4/3',
+            position: 'relative'
+          }}
+        >
           {mainImage && !hasError ? (
             <>
-              <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6">
+              <div 
+                className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6"
+                style={{ 
+                  minWidth: 0, 
+                  minHeight: 0
+                }}
+              >
                 <Image
                   src={mainImage}
                   alt={productName}
@@ -100,8 +119,8 @@ const ProductImageGallery = forwardRef<HTMLDivElement, ProductImageGalleryProps>
 
         {/* Thumbnail Gallery */}
         {images.length > 1 && (
-          <div className="w-full max-w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl">
-            <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth touch-pan-x">
+          <div className="w-full" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
+            <div className="w-full overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth touch-pan-x" style={{ width: '100%', maxWidth: '100%' }}>
               <div className="inline-flex gap-2 sm:gap-2.5 md:gap-3 pb-2 px-1 sm:px-2">
                 {images.map((image, index) => {
                   const isSelected = index === selectedIndex;
