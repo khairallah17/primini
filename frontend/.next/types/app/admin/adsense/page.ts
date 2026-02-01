@@ -1,4 +1,4 @@
-// File: /Users/khairallahmohammed/Documents/primini/frontend/app/admin/adsense/page.tsx
+// File: /home/khairallah/primini/frontend/app/admin/adsense/page.tsx
 import * as entry from '../../../../../app/admin/adsense/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

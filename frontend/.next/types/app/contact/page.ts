@@ -1,4 +1,4 @@
-// File: /Users/khairallahmohammed/Documents/primini/frontend/app/contact/page.tsx
+// File: /home/khairallah/primini/frontend/app/contact/page.tsx
 import * as entry from '../../../../app/contact/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

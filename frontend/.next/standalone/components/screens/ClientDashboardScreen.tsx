@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
 import ProtectedRoute from '../ProtectedRoute';
@@ -28,6 +29,7 @@ function ClientDashboardContent() {
   useEffect(() => {
     if (!tokens?.key) return;
     loadMyProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run when tokens/filter change; loadMyProducts stable
   }, [tokens, filter]);
 
   const loadMyProducts = async (page: number = 1) => {
@@ -394,10 +396,13 @@ function ClientDashboardContent() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {product.image && !imageErrors[product.id] ? (
-                            <img
+                            <Image
                               src={product.image}
                               alt={product.name}
+                              width={48}
+                              height={48}
                               className="h-12 w-12 rounded object-cover mr-4"
+                              unoptimized
                               onError={() => setImageErrors(prev => ({ ...prev, [product.id]: true }))}
                             />
                           ) : (

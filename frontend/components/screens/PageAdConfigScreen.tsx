@@ -55,6 +55,7 @@ export default function PageAdConfigScreen() {
 
   useEffect(() => {
     loadConfigs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount; loadConfigs uses tokens inside
   }, []);
 
   const loadConfigs = async () => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
 import { getAdSenseConfig, updateAdSenseConfig, uploadBannerImage, type AdSenseConfig, type AdSlotConfig } from '../../lib/settingsApi';
 
@@ -318,20 +319,26 @@ function AdSenseSettingsContent() {
                                   rel="noopener noreferrer"
                                   className="block"
                                 >
-                                  <img
+                                  <Image
                                     src={slotConfig.banner_image}
                                     alt="Banner preview"
+                                    width={728}
+                                    height={90}
                                     className="max-w-full h-auto"
+                                    unoptimized
                                     onError={(e) => {
                                       (e.target as HTMLImageElement).style.display = 'none';
                                     }}
                                   />
                                 </a>
                               ) : (
-                                <img
+                                <Image
                                   src={slotConfig.banner_image}
                                   alt="Banner preview"
+                                  width={728}
+                                  height={90}
                                   className="max-w-full h-auto"
+                                  unoptimized
                                   onError={(e) => {
                                     (e.target as HTMLImageElement).style.display = 'none';
                                   }}

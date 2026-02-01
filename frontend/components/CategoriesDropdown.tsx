@@ -195,11 +195,18 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
     }, 300); // 300ms delay
   };
 
+  const handleTriggerClick = () => {
+    if (isMobile) {
+      onOpenChange(!isOpen);
+    }
+  };
+
   if (!isOpen) {
     return (
       <div
         ref={triggerRef}
         onMouseEnter={() => onOpenChange(true)}
+        onClick={handleTriggerClick}
         className="relative"
       >
         {children}
@@ -226,6 +233,7 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
           // Otherwise, schedule close with delay
           scheduleClose();
         }}
+        onClick={handleTriggerClick}
         className="relative"
       >
         {children}
@@ -267,10 +275,12 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
                     <div
                       key={category.name}
                       onMouseEnter={() => setHoveredCategory(category.name)}
-                      onClick={() => {
-                        // On mobile, clicking a category shows its subcategories
+                      onClickCapture={(e) => {
+                        // On mobile, expand/collapse only; prevent Link navigation so the row handles the tap
                         if (isMobile) {
-                          setHoveredCategory(hoveredCategory === category.name ? null : category.name);
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setHoveredCategory((prev) => (prev === category.name ? null : category.name));
                         }
                       }}
                       className={`px-4 sm:px-6 py-3 cursor-pointer transition-colors ${
@@ -282,11 +292,10 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
                       <Link
                         href={`/categories/${slugify(category.name)}`}
                         onClick={(e) => {
-                          // Only navigate if not on mobile or if subcategories are not shown
-                          if (!isMobile || hoveredCategory !== category.name) {
-                            onOpenChange(false);
-                          } else {
+                          if (isMobile) {
                             e.preventDefault();
+                          } else {
+                            onOpenChange(false);
                           }
                         }}
                         className="block text-sm sm:text-base"

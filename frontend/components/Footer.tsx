@@ -31,7 +31,7 @@ export default function Footer() {
         <div>
           <Link href="/" className="inline-block">
             <Image
-              src="/images/avito-colors.jpeg"
+              src="/images/avita-colors.png"
               alt="Avita"
               width={120}
               height={40}

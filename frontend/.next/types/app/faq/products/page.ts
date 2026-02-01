@@ -1,4 +1,4 @@
-// File: /Users/khairallahmohammed/Documents/primini/frontend/app/faq/products/page.tsx
+// File: /home/khairallah/primini/frontend/app/faq/products/page.tsx
 import * as entry from '../../../../../app/faq/products/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

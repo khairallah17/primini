@@ -27,6 +27,7 @@ function UserManagementContent() {
   useEffect(() => {
     if (!tokens?.key) return;
     loadUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run when tokens/activeFilter change; loadUsers stable
   }, [tokens, activeFilter]);
 
   // Separate effect for search query with debounce
@@ -46,6 +47,7 @@ function UserManagementContent() {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce search only; searchTimeout/tokens intentionally omitted
   }, [searchQuery]);
 
   const loadUsers = async (page: number = 1) => {

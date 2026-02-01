@@ -12,6 +12,7 @@ import {
   type ProductCreateData,
   type PriceOfferCreateData
 } from '../../lib/productApi';
+import Image from 'next/image';
 import { getAllCategories } from '../../lib/categoryApi';
 import { productSchema, type ProductFormData } from '../../lib/validations';
 import type { Product } from '../../lib/types';
@@ -1191,10 +1192,13 @@ function ProductFormContent() {
                       <div className="relative bg-gray-100 rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
                         {/* Main Image Display */}
                         <div className="relative w-full h-full flex items-center justify-center">
-                          <img
+                          <Image
                             src={imagePreviews[currentImageIndex]}
                             alt={`Image ${currentImageIndex + 1}`}
+                            width={800}
+                            height={450}
                             className="max-w-full max-h-full object-contain"
+                            unoptimized
                             onError={(e) => {
                               // Handle broken image URLs
                               const target = e.target as HTMLImageElement;
@@ -1216,7 +1220,7 @@ function ProductFormContent() {
                               if (errorDiv) {
                                 errorDiv.remove();
                               }
-                              target.style.display = 'block';
+                              (e.target as HTMLImageElement).style.display = 'block';
                             }}
                           />
                           
@@ -1267,10 +1271,13 @@ function ProductFormContent() {
                             }`}
                             onClick={() => setCurrentImageIndex(index)}
                           >
-                            <img
+                            <Image
                               src={preview}
                               alt={`Thumbnail ${index + 1}`}
+                              width={80}
+                              height={80}
                               className="w-full h-full object-cover"
+                              unoptimized
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';

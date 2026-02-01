@@ -51,7 +51,7 @@ export default function HomeLoader({ isLoading, onComplete }: HomeLoaderProps) {
         {/* Logo */}
         <div className="flex flex-col items-center">
           <Image
-            src="/images/avito-colors.jpeg"
+            src="/images/avita-colors.png"
             alt="Avita"
             width={320}
             height={320}

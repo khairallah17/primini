@@ -1,4 +1,4 @@
-// File: /Users/khairallahmohammed/Documents/primini/frontend/app/forgot-password/verify/page.tsx
+// File: /home/khairallah/primini/frontend/app/forgot-password/verify/page.tsx
 import * as entry from '../../../../../app/forgot-password/verify/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

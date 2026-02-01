@@ -39,6 +39,7 @@ export default function BlogManagementScreen() {
       }
     }
     void loadBlogs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount; tokens used inside
   }, []);
 
   const handleDelete = async (id: number, slug: string) => {

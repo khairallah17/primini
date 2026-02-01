@@ -14,6 +14,7 @@ import {
   rejectOffer
 } from '../../lib/productApi';
 import type { Product, PaginatedResponse, PriceOffer } from '../../lib/types';
+import Image from 'next/image';
 import Link from 'next/link';
 
 type TabType = 'pending' | 'all' | 'my';
@@ -47,6 +48,7 @@ function AdminDashboardContent() {
     if (activeTab === 'pending') {
       loadPendingOffers();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run when tokens/activeTab/approvalFilter change; loaders are stable
   }, [tokens, activeTab, approvalFilter]);
 
   // Separate effect for search query with debounce
@@ -68,6 +70,7 @@ function AdminDashboardContent() {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce search only; searchTimeout/tokens intentionally omitted
   }, [searchQuery]);
 
   const loadProducts = async (page: number = 1) => {
@@ -260,10 +263,13 @@ function AdminDashboardContent() {
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
           {imageUrl && !imageErrors[product.id] ? (
-            <img
+            <Image
               src={imageUrl}
               alt={product.name}
+              width={48}
+              height={48}
               className="h-12 w-12 rounded object-cover mr-4"
+              unoptimized
               onError={() => handleImageError(product.id)}
             />
           ) : (

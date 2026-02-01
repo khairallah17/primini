@@ -119,51 +119,56 @@ export default function HomeScreen() {
       {showLoader && (
         <HomeLoader isLoading={isContentLoading} onComplete={handleLoaderComplete} />
       )}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-6 sm:px-10 py-16 text-white shadow-xl -mt-10" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}>
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-6 md:px-10 py-16 text-white shadow-xl -mt-10" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}>
         {/* Gradient Overlay */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/60 via-primary/50 to-primary-dark/60" />
         
         {/* Content */}
-        <div className="relative z-10 space-y-6 container mx-auto max-w-[70%] w-[70%]">
-          <h1 className="text-4xl font-semibold leading-snug">
+        <div className="relative z-10 space-y-6 container mx-auto md:max-w-[70%] md:w-[70%]">
+          <h1 className="md:text-4xl text-xl font-semibold leading-snug">
             Trouvez le meilleur prix pour vos produits high-tech préférés.
           </h1>
-          <p className="text-base text-white/80">
+          <p className="md:text-base text-xs md:text-base text-white/80">
             Comparez instantanément les offres des marchands marocains et soyez alerté dès que les prix baissent.
           </p>
           <form
             onSubmit={handleSearchSubmit}
-            className="mt-8 flex flex-col gap-3 sm:flex-row"
+            className="mt-8 flex flex-row gap-2"
           >
             <input
               type="search"
-              className="flex-1 rounded-2xl border-0 bg-white/90 px-6 py-4 text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur focus:bg-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="flex-1 text-sm md:text-base rounded-2xl border-0 bg-white/90 md:px-6 px-3 md:py-4 py-2 text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur focus:bg-white focus:outline-none focus:ring-2 focus:ring-white/50"
               placeholder="Rechercher un produit..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
             <button
               type="submit"
-              className="rounded-2xl bg-white px-8 py-4 text-sm font-semibold text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+              className="rounded-2xl bg-white p-3 md:p-4 text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl flex items-center justify-center"
+              aria-label="Rechercher"
             >
-              Rechercher
+              {/* Search Icon SVG */}
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth={2} />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" strokeWidth={2} strokeLinecap="round"/>
+              </svg>
             </button>
           </form>
         </div>
       </section>
 
-      <div className="space-y-16">
+      <div className="md:space-y-16 space-y-8">
       <div className="flex justify-center">
         <AdSense slot="homepage_top" className="my-8" />
       </div>
 
       <section>
         <header className="mb-8">
-          <h2 className="text-3xl font-semibold text-slate-800">Parcourir par catégorie</h2>
+          <h2 className="md:text-3xl text-xl font-semibold text-slate-800">Parcourir par catégorie</h2>
           <p className="mt-2 text-sm text-slate-500">Explorez nos catégories pour trouver les meilleurs produits</p>
         </header>
         <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
-          <div className="flex items-center gap-4 sm:gap-6 min-w-max flex-nowrap">
+          <div className="flex items-center gap-3 md:gap-4 min-w-max flex-nowrap">
             {loading && categories.length === 0 && <CategorySkeleton />}
             {categories
               .filter((category) => category.name.toLowerCase() !== 'autre')
@@ -180,9 +185,9 @@ export default function HomeScreen() {
 
       <section>
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-slate-800">Produits populaires</h2>
+          <h2 className="md:text-2xl text-xl font-semibold text-slate-800">Produits populaires</h2>
         </div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {loadingDesc ? (
             <p className="col-span-full rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
               Chargement des produits...
@@ -213,53 +218,53 @@ function getCategoryIcon(categoryName: string) {
   
   // Smartphones
   if (normalizedName.includes('smartphone') || normalizedName.includes('téléphonie') || normalizedName.includes('telephonie')) {
-    return <FaMobileAlt className="w-12 h-12" />;
+    return <FaMobileAlt className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Informatique
   if (normalizedName.includes('informatique') || normalizedName.includes('ordinateur') || normalizedName.includes('laptop')) {
-    return <FaLaptop className="w-12 h-12" />;
+    return <FaLaptop className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Électroménager
   if ((normalizedName.includes('électroménager') || normalizedName.includes('electromenager')) && !normalizedName.includes('petit')) {
-    return <FaTv className="w-12 h-12" />;
+    return <FaTv className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Petit Électroménager
   if (normalizedName.includes('petit') && (normalizedName.includes('électroménager') || normalizedName.includes('electromenager'))) {
-    return <FaBlender className="w-12 h-12" />;
+    return <FaBlender className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Image & Son
   if (normalizedName.includes('image') && normalizedName.includes('son')) {
-    return <FaFilm className="w-12 h-12" />;
+    return <FaFilm className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Photo & Caméra
   if (normalizedName.includes('photo') || normalizedName.includes('caméra') || normalizedName.includes('camera')) {
-    return <FaCamera className="w-12 h-12" />;
+    return <FaCamera className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Santé - Beauté
   if (normalizedName.includes('santé') || normalizedName.includes('sante') || normalizedName.includes('beauté') || normalizedName.includes('beaute')) {
-    return <FaLeaf className="w-12 h-12" />;
+    return <FaLeaf className="md:w-12 md:h-12 w-10 h-10" />;
   }
   
   // Default icon
-  return <FaBox className="w-12 h-12" />;
+  return <FaBox className="md:w-12 md:h-12 w-10 h-10" />;
 }
 
 function CategoryCard({ category }: { category: Category }) {
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="group flex flex-col items-center justify-center p-4 sm:p-6 transition-all hover:scale-105 flex-shrink-0"
+      className="group flex flex-col items-center justify-center md:p-4 p-3 transition-all hover:scale-105 flex-shrink-0"
     >
       <div className="mb-3 text-primary group-hover:text-primary/80 transition-colors">
         {getCategoryIcon(category.name)}
       </div>
-      <h3 className="text-sm sm:text-base font-semibold text-slate-800 group-hover:text-primary transition-colors text-center whitespace-nowrap">
+      <h3 className="md:text-sm text-xs font-semibold text-slate-800 group-hover:text-primary transition-colors text-center whitespace-nowrap">
         {category.name}
       </h3>
     </Link>

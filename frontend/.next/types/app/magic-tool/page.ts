@@ -1,4 +1,4 @@
-// File: /Users/khairallahmohammed/Documents/primini/frontend/app/magic-tool/page.tsx
+// File: /home/khairallah/primini/frontend/app/magic-tool/page.tsx
 import * as entry from '../../../../app/magic-tool/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

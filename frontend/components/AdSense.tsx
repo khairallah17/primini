@@ -32,7 +32,7 @@ export default function AdSense({
       try {
         const adsenseConfig = await getAdSenseConfig();
         setConfig(adsenseConfig);
-        
+
         // Get slot-specific configuration
         const slotValue = (adsenseConfig as any)[slot];
         setSlotConfig(slotValue);
@@ -49,15 +49,15 @@ export default function AdSense({
     
     // Reset loaded state when slot changes
     setLoaded(false);
-  }, [slot, slotConfig]);
+  }, [slot, slotConfig, config?.enabled]);
 
   useEffect(() => {
     if (!config?.enabled || !slotConfig || loaded) return;
-    
+
     // Only load AdSense script if it's an AdSense ad
     if (isAdSlotConfig(slotConfig) && slotConfig.ad_type === 'adsense') {
       if (!config.publisher_id || !slotConfig.adsense_id) return;
-      
+
       try {
         ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
         setLoaded(true);
@@ -75,6 +75,11 @@ export default function AdSense({
     }
   }, [config, slotConfig, loaded]);
 
+  // If slot is empty or falsy, do not display anything (after all hooks)
+  if (!slot || slot.trim() === '') {
+    return null;
+  }
+
   if (!config?.enabled || !slotConfig) {
     return null; // Don't render if not configured
   }
@@ -86,7 +91,7 @@ export default function AdSense({
     }
 
     const bannerContent = (
-      <div className={className} style={style}>
+      <div className={slot ? className : 'hidden'} style={style}>
         <Image
           src={slotConfig.banner_image}
           alt="Advertisement"
@@ -143,4 +148,3 @@ export default function AdSense({
     </>
   );
 }
-

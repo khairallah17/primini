@@ -13,6 +13,7 @@ import type { PriceOffer, Product, Category, Merchant } from '../../lib/types';
 import Carousel from '../Carousel';
 import ProductCard from '../ProductCard';
 import AdSense from '../AdSense';
+import Image from 'next/image';
 import ProductImageGallery from '../ProductImageGallery';
 import ProductDetailSkeleton from '../ProductDetailSkeleton';
 
@@ -441,10 +442,13 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
                         
                         {/* Merchant Logo */}
                         {offer.merchant?.logo_display || offer.merchant?.logo ? (
-                          <img
-                            src={offer.merchant.logo_display || offer.merchant.logo}
+                          <Image
+                            src={(offer.merchant.logo_display || offer.merchant.logo) ?? ''}
                             alt={offer.merchant.name || 'Merchant logo'}
+                            width={120}
+                            height={40}
                             className="h-8 sm:h-10 w-auto object-contain max-w-[120px] sm:max-w-[150px] flex-shrink-0"
+                            unoptimized
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
                             }}

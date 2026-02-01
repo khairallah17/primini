@@ -12,6 +12,7 @@ import {
 } from '../../lib/userApi';
 import type { PaginatedResponse } from '../../lib/types';
 import type { Product } from '../../lib/types';
+import Image from 'next/image';
 import Link from 'next/link';
 
 function UserDetailsContent() {
@@ -37,6 +38,7 @@ function UserDetailsContent() {
     if (!tokens?.key || !userId) return;
     loadUserDetails();
     loadUserProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- run when tokens/userId/approvalFilter change; loaders stable
   }, [tokens, userId, approvalFilter]);
 
   // Separate effect for search query with debounce
@@ -56,6 +58,7 @@ function UserDetailsContent() {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce search only; searchTimeout/tokens/userId intentionally omitted
   }, [searchQuery]);
 
   const loadUserDetails = async () => {
@@ -328,10 +331,13 @@ function UserDetailsContent() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             {product.image && !imageErrors[product.id] ? (
-                              <img
+                              <Image
                                 src={product.image}
                                 alt={product.name}
+                                width={48}
+                                height={48}
                                 className="h-12 w-12 rounded object-cover mr-4"
+                                unoptimized
                                 onError={() => setImageErrors(prev => ({ ...prev, [product.id]: true }))}
                               />
                             ) : (
