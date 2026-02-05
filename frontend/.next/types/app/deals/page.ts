@@ -1,4 +1,4 @@
-// File: /home/khairallah/primini/frontend/app/deals/page.tsx
+// File: C:\Avita\primini\frontend\app\deals\page.tsx
 import * as entry from '../../../../app/deals/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -146,7 +146,7 @@ export default function Header() {
               alt="Avita"
               width={320}
               height={320}
-              className="md:h-12 h-10 w-auto object-contain"
+              className="md:h-6 h-6 w-auto object-contain"
               priority
               unoptimized={true}
             />
@@ -385,7 +385,7 @@ export default function Header() {
                   alt="Avita"
                   width={320}
                   height={320}
-                  className="h-12 w-auto object-contain"
+                  className="h-6 w-auto object-contain"
                   priority
                   unoptimized={true}
                 />

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FavoriteProduct, useFavorites } from '../context/FavoritesContext';
 
 export type ProductSummary = FavoriteProduct & {
@@ -13,13 +13,16 @@ export type ProductSummary = FavoriteProduct & {
 
 type ProductCardProps = {
   product: ProductSummary;
+  onImageLoadStatus?: (isLoaded: boolean) => void;
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onImageLoadStatus }: ProductCardProps) {
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const active = isFavorite(product.id);
   const [imageError, setImageError] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState<string | null>(null);
+
+  
 
   // Helper function to construct image URL
   const getImageUrl = (imagePath: string | undefined): string | null => {
@@ -32,16 +35,18 @@ export default function ProductCard({ product }: ProductCardProps) {
     
     // If it's a local path (starts with /media/ or media/), prepend backend URL
     if (imagePath.startsWith('/media/') || imagePath.startsWith('media/')) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const baseUrl = apiUrl.replace('/api', '');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.avita.ma/api';
+      // Remove /api from the end of the URL if present
+      const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
       const imagePathClean = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
       return `${baseUrl}${imagePathClean}`;
     }
     
     // If it's a relative path without /media/, assume it's in media/products/
     if (!imagePath.startsWith('/')) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const baseUrl = apiUrl.replace('/api', '');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.avita.ma/api';
+      // Remove /api from the end of the URL if present
+      const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
       return `${baseUrl}/media/products/${imagePath}`;
     }
     
@@ -96,9 +101,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       .trim();
   };
 
-  // Get current image source to use
-  const imageSrc = currentImageSrc || initialImageSrc;
-
   const handleImageError = () => {
     // Determine what we were trying
     const wasTryingDisplay = currentImageSrc === product.image_display || (!currentImageSrc && initialImageSrc === product.image_display);
@@ -129,60 +131,59 @@ export default function ProductCard({ product }: ProductCardProps) {
     setImageError(true);
   };
 
+  // Get current image source to use
+  const imageSrc = currentImageSrc || initialImageSrc;
+
+  // Don't render the component if there's no initial image source or if image failed to load
+  const shouldHide = !initialImageSrc || imageError || !imageSrc;
+
+  // Notify parent about image load status
+  useEffect(() => {
+    if (onImageLoadStatus) {
+      onImageLoadStatus(!shouldHide);
+    }
+  }, [shouldHide, onImageLoadStatus]);
+
   return (
-    <Link href={`/product/${product.slug}`} className="block h-full">
+    <Link 
+      href={`/product/${product.slug}`} 
+      className={`block h-full ${shouldHide ? 'hidden h-0 w-0' : ''}`}
+    >
       <article className="flex h-full flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg cursor-pointer">
         <div className="flex flex-col gap-4">
-          {imageSrc && !imageError ? (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-              {/* Tags Pills - Upper Left */}
-              {displayTags.length > 0 && (
-                <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
-                  {displayTags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <div className="absolute inset-2 sm:inset-3">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
+            {/* Tags Pills - Upper Left */}
+            {displayTags.length > 0 && (
+              <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
+                {displayTags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="absolute inset-2 sm:inset-3">
+              {imageSrc && (
                 <Image 
                   src={imageSrc} 
                   alt={product.name} 
-                  fill 
-                  className="object-contain transition-transform duration-300 hover:scale-105" 
-                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  quality={90}
-                  priority={false}
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
-                  onError={handleImageError}
-                  unoptimized={true}
+                fill 
+                className="object-contain transition-transform duration-300 hover:scale-105" 
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                quality={90}
+                priority={false}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+                onError={handleImageError}
+                unoptimized={true}
                 />
-              </div>
-            </div>
-          ) : (
-            <div className="relative aspect-[4/3] flex items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200">
-              {/* Tags Pills - Upper Left (even when no image) */}
-              {displayTags.length > 0 && (
-                <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
-                  {displayTags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
               )}
-              <span className="text-xs font-medium text-slate-400">Aucune image</span>
             </div>
-          )}
+          </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-800">
               {product.name}

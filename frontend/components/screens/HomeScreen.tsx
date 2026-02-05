@@ -119,43 +119,51 @@ export default function HomeScreen() {
       {showLoader && (
         <HomeLoader isLoading={isContentLoading} onComplete={handleLoaderComplete} />
       )}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-6 md:px-10 py-16 text-white shadow-xl -mt-10" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}>
+      <section
+        className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/95 to-primary-dark px-4 md:px-10 py-3 md:py-10 text-white shadow-xl -mt-10"
+        style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}
+      >
         {/* Gradient Overlay */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/60 via-primary/50 to-primary-dark/60" />
-        
+
         {/* Content */}
-        <div className="relative z-10 space-y-6 container mx-auto md:max-w-[70%] md:w-[70%]">
-          <h1 className="md:text-4xl text-xl font-semibold leading-snug">
+        <div className="relative z-10 container mx-auto max-w-6xl text-center space-y-2 md:space-y-5">
+
+          <h1 className="text-lg md:text-4xl font-bold leading-tight">
             Trouvez le meilleur prix pour vos produits high-tech préférés.
           </h1>
-          <p className="md:text-base text-xs md:text-base text-white/80">
+
+          <p className="text-xs md:text-base text-white/80 max-w-3xl mx-auto">
             Comparez instantanément les offres des marchands marocains et soyez alerté dès que les prix baissent.
           </p>
+
           <form
             onSubmit={handleSearchSubmit}
-            className="mt-8 flex flex-row gap-2"
+            className="mt-3 md:mt-6 flex flex-row gap-2 justify-center"
           >
             <input
               type="search"
-              className="flex-1 text-sm md:text-base rounded-2xl border-0 bg-white/90 md:px-6 px-3 md:py-4 py-2 text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur focus:bg-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="w-full max-w-xs md:max-w-2xl text-sm md:text-base rounded-2xl border-0 bg-white/90 md:px-6 px-3 md:py-4 py-2 text-slate-900 placeholder-slate-500 shadow-lg backdrop-blur focus:bg-white focus:outline-none focus:ring-2 focus:ring-white/50"
               placeholder="Rechercher un produit..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
+
             <button
               type="submit"
-              className="rounded-2xl bg-white p-3 md:p-4 text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl flex items-center justify-center"
+              className="rounded-2xl bg-white px-4 md:px-6 py-2 md:py-4 text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl flex items-center justify-center"
               aria-label="Rechercher"
             >
-              {/* Search Icon SVG */}
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth={2} />
-                <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" strokeWidth={2} strokeLinecap="round"/>
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-primary" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" strokeLinecap="round"/>
               </svg>
             </button>
           </form>
+
         </div>
       </section>
+
 
       <div className="md:space-y-16 space-y-8">
       <div className="flex justify-center">

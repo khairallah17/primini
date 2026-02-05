@@ -57,6 +57,7 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
   });
   const [similarProducts, setSimilarProducts] = useState<ProductSummary[]>([]);
   const [loadingSimilar, setLoadingSimilar] = useState(false);
+  const [imageLoadStatus, setImageLoadStatus] = useState<Record<number, boolean>>({});
   const tabsRef = useRef<HTMLDivElement>(null);
   const { addFavorite, isFavorite, removeFavorite } = useFavorites();
   const { tokens, user, isAdmin } = useAuth();
@@ -804,21 +805,33 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
             </div>
           ) : (
           <Carousel>
-              {similarProducts.map((item) => (
-              <div key={item.id} className="min-w-[250px] sm:min-w-[280px] snap-start">
-                <ProductCard
-                  product={{
-                    id: item.id,
-                    name: item.name,
-                    slug: item.slug,
-                    image: item.image,
-                      image_display: item.image_display,
-                      image_file: item.image_file,
-                      lowestPrice: item.lowestPrice ?? item.lowest_price
-                  }}
-                />
-              </div>
-            ))}
+              {similarProducts.map((item) => {
+                const imageLoaded = imageLoadStatus[item.id] ?? false;
+                return (
+                  <div 
+                    key={item.id} 
+                    className={`min-w-[250px] sm:min-w-[280px] snap-start ${!imageLoaded ? 'hidden h-0 w-0' : ''}`}
+                  >
+                    <ProductCard
+                      product={{
+                        id: item.id,
+                        name: item.name,
+                        slug: item.slug,
+                        image: item.image,
+                        image_display: item.image_display,
+                        image_file: item.image_file,
+                        lowestPrice: item.lowestPrice ?? item.lowest_price
+                      }}
+                      onImageLoadStatus={(isLoaded) => {
+                        setImageLoadStatus(prev => ({
+                          ...prev,
+                          [item.id]: isLoaded
+                        }));
+                      }}
+                    />
+                  </div>
+                );
+              })}
           </Carousel>
           )}
         </section>
