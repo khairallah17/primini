@@ -195,7 +195,7 @@ export default function HomeScreen() {
         <div className="flex items-center justify-between">
           <h2 className="md:text-2xl text-xl font-semibold text-slate-800">Produits populaires</h2>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {loadingDesc ? (
             <p className="col-span-full rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
               Chargement des produits...
