@@ -16,10 +16,10 @@ db.sqlite3
 
 # Django
 staticfiles/
+media/
 products/
 *.log
 *.pot
-media/
 
 # Node
 node_modules/
