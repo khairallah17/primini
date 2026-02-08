@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { FavoriteProduct, useFavorites } from '../context/FavoritesContext';
@@ -169,16 +169,6 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
 
   // Get current image source to use
   const imageSrc = currentImageSrc || initialImageSrc;
-
-  // Don't render the component if there's no initial image source or if image failed to load
-  const shouldHide = !initialImageSrc || imageError || !imageSrc;
-
-  // Notify parent about image load status
-  useEffect(() => {
-    if (onImageLoadStatus) {
-      onImageLoadStatus(!shouldHide);
-    }
-  }, [shouldHide, onImageLoadStatus]);
 
   return (
     <Link href={`/product/${product.slug}`} className="block h-full">

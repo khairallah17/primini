@@ -806,11 +806,10 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
           ) : (
           <Carousel>
               {similarProducts.map((item) => {
-                const imageLoaded = imageLoadStatus[item.id] ?? false;
                 return (
                   <div 
                     key={item.id} 
-                    className={`min-w-[250px] sm:min-w-[280px] snap-start ${!imageLoaded ? 'hidden h-0 w-0' : ''}`}
+                    className={`min-w-[250px] sm:min-w-[280px] snap-start`}
                   >
                     <ProductCard
                       product={{
