@@ -19,6 +19,7 @@ staticfiles/
 products/
 *.log
 *.pot
+media/
 
 # Node
 node_modules/
@@ -33,7 +34,7 @@ yarn-error.log*
 # Environment
 .env
 .env.local
-.env.*.local
+.env.*.local3
 *.env
 
 # IDE
