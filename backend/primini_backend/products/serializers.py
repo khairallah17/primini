@@ -102,10 +102,15 @@ class ProductListSerializer(serializers.ModelSerializer):
         return None
 
     def get_lowest_price(self, obj):
+        value = None
         if hasattr(obj, 'lowest_price') and obj.lowest_price is not None:
-            return obj.lowest_price
-        offer = obj.offers.order_by('price').first()
-        return offer.price if offer else None
+            value = obj.lowest_price
+        else:
+            offer = obj.offers.order_by('price').first()
+            value = offer.price if offer else None
+        if value is None:
+            return None
+        return float(value)
 
 
 class PriceOfferSerializer(serializers.ModelSerializer):

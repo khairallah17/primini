@@ -231,13 +231,13 @@ export default function ProductListScreen({ title, endpoint, query }: ProductLis
           </select>
         </header>
         {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="h-60 animate-pulse rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200" />
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

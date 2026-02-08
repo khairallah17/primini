@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { FavoriteProduct, useFavorites } from '../context/FavoritesContext';
 
 export type ProductSummary = FavoriteProduct & {
@@ -33,20 +35,18 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
       return imagePath;
     }
     
+    // Base URL for media: strip only trailing /api or /api/ so we don't break hostnames like https://api.avita.ma
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    
     // If it's a local path (starts with /media/ or media/), prepend backend URL
     if (imagePath.startsWith('/media/') || imagePath.startsWith('media/')) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.avita.ma/api';
-      // Remove /api from the end of the URL if present
-      const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
       const imagePathClean = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
       return `${baseUrl}${imagePathClean}`;
     }
     
     // If it's a relative path without /media/, assume it's in media/products/
     if (!imagePath.startsWith('/')) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.avita.ma/api';
-      // Remove /api from the end of the URL if present
-      const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
       return `${baseUrl}/media/products/${imagePath}`;
     }
     
@@ -87,7 +87,43 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
   const displayTags = product.tags?.slice(0, 3) || [];
 
   const price = product.lowestPrice ?? product.lowest_price;
-  const numPrice = price !== undefined && price !== null ? (typeof price === 'string' ? parseFloat(price) : price) : null;
+
+  // Parse price: backend may send "1.000" (European thousands) which parseFloat turns into 1 — normalize first
+  const parsePrice = (value: string | number | undefined | null): number | null => {
+    if (value === undefined || value === null) return null;
+    if (typeof value === 'number') return isNaN(value) ? null : value;
+    const s = String(value).trim();
+    if (!s) return null;
+    if (/,/.test(s)) {
+      const withoutThousands = s.replace(/\./g, '').replace(',', '.');
+      const n = parseFloat(withoutThousands);
+      return isNaN(n) ? null : n;
+    }
+    if (/^\d+(\.\d{3})+$/.test(s)) {
+      const n = parseFloat(s.replace(/\./g, ''));
+      return isNaN(n) ? null : n;
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  };
+  const numPrice = price;
+
+  // Format price: space as thousand separator, comma for decimals (e.g. 1000 -> 1 000, 1234.5 -> 1 234,5)
+  const formatPrice = (n: number): string => {
+    const rounded = Math.round(n * 1000) / 1000;
+    const integerPart = Math.floor(rounded);
+    const decimalPart = rounded - integerPart;
+    const intStr = String(integerPart);
+    const intFormatted = intStr.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    if (decimalPart > 1e-9) {
+      const decRaw = rounded.toFixed(3).split('.')[1] ?? '';
+      const decTrimmed = decRaw.replace(/0+$/, '') || '0';
+      if (decTrimmed && decTrimmed !== '000') {
+        return `${intFormatted},${decTrimmed}`;
+      }
+    }
+    return intFormatted;
+  };
 
   // Strip markdown formatting from description for preview
   const stripMarkdown = (text: string): string => {
@@ -145,28 +181,38 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
   }, [shouldHide, onImageLoadStatus]);
 
   return (
-    <Link 
-      href={`/product/${product.slug}`} 
-      className={`block h-full ${shouldHide ? 'hidden h-0 w-0' : ''}`}
-    >
-      <article className="flex h-full flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-        <div className="flex flex-col gap-4">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-            {/* Tags Pills - Upper Left */}
-            {displayTags.length > 0 && (
-              <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
-                {displayTags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="absolute inset-2 sm:inset-3">
-              {imageSrc && (
+    <Link href={`/product/${product.slug}`} className="block h-full">
+      <article className="flex h-full flex-col justify-between rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-3 sm:p-4 lg:p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg cursor-pointer">
+        <div className="flex flex-col gap-2 sm:gap-4">
+          {imageSrc && !imageError ? (
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100">
+              {/* Tags Pills - Upper Left */}
+              {displayTags.length > 0 && (
+                <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
+                  {displayTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-1.5 py-0.5 text-[9px] sm:text-[10px] lg:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {/* Heart / Favori - Top Right */}
+              <button
+                onClick={toggleFavorite}
+                className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10 flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition hover:bg-white"
+                type="button"
+                aria-label={active ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              >
+                {active ? (
+                  <HeartSolid className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+                ) : (
+                  <HeartOutline className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
+                )}
+              </button>
+              <div className="absolute inset-2 sm:inset-3">
                 <Image 
                   src={imageSrc} 
                   alt={product.name} 
@@ -181,35 +227,56 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
                 onError={handleImageError}
                 unoptimized={true}
                 />
-              )}
+              </div>
             </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-800">
+          ) : (
+            <div className="relative aspect-[4/3] flex items-center justify-center rounded-2xl bg-gray-100">
+              {/* Tags Pills - Upper Left (even when no image) */}
+              {displayTags.length > 0 && (
+                <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5">
+                  {displayTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-1.5 py-0.5 text-[9px] sm:text-[10px] lg:text-xs font-medium bg-white/90 backdrop-blur-sm text-slate-700 rounded-full border border-slate-200 shadow-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {/* Heart / Favori - Top Right (when no image) */}
+              <button
+                onClick={toggleFavorite}
+                className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10 flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition hover:bg-white"
+                type="button"
+                aria-label={active ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              >
+                {active ? (
+                  <HeartSolid className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+                ) : (
+                  <HeartOutline className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
+                )}
+              </button>
+              <span className="text-[10px] sm:text-xs font-medium text-slate-400">Aucune image</span>
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-slate-800 line-clamp-2">
               {product.name}
             </h3>
             {product.description && (
-              <p className="mt-2 line-clamp-3 text-xs text-slate-500">
+              <p className="mt-1 sm:mt-2 line-clamp-2 sm:line-clamp-3 text-[10px] sm:text-xs text-slate-500">
                 {stripMarkdown(product.description)}
               </p>
             )}
           </div>
         </div>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-2 sm:mt-4 flex items-center justify-between">
           {numPrice !== null && !isNaN(numPrice) ? (
-            <p className="text-sm font-semibold text-primary">{numPrice.toFixed(3)} MAD</p>
+            <p className="text-xs sm:text-sm font-semibold text-primary">{numPrice} MAD</p>
           ) : (
-            <p className="text-sm text-slate-500">Prix en attente</p>
+            <p className="text-xs sm:text-sm text-slate-500">Prix en attente</p>
           )}
-          <button
-            onClick={toggleFavorite}
-            className={`rounded-full px-3 py-2 text-xs font-semibold ${
-              active ? 'bg-secondary text-white' : 'bg-slate-200 text-slate-700'
-            }`}
-            type="button"
-          >
-            {active ? 'Retirer' : 'Favori'}
-          </button>
         </div>
       </article>
     </Link>
