@@ -314,6 +314,8 @@ export default function ProductDetailScreen({ slug }: ProductDetailScreenProps) 
                 ? product.images
                     .sort((a, b) => a.order - b.order)
                     .map((img) => img.image_url || img.image)
+                : product.image_display
+                ? [product.image_display]
                 : product.image
                 ? [product.image]
                 : []
