@@ -17,11 +17,23 @@ import Image from 'next/image';
 import ProductImageGallery from '../ProductImageGallery';
 import ProductDetailSkeleton from '../ProductDetailSkeleton';
 
-function formatCurrency(value: number | string | undefined) {
+function formatCurrency(value: number | string | undefined): string {
   if (value === undefined || value === null) return 'N/A';
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   if (isNaN(numValue)) return 'N/A';
-  return `${numValue.toFixed(3)} MAD`;
+  const rounded = Math.round(numValue * 1000) / 1000;
+  const integerPart = Math.floor(rounded);
+  const decimalPart = rounded - integerPart;
+  const intStr = String(integerPart);
+  const intFormatted = intStr.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  if (decimalPart > 1e-9) {
+    const decRaw = rounded.toFixed(3).split('.')[1] ?? '';
+    const decTrimmed = decRaw.replace(/0+$/, '') || '0';
+    if (decTrimmed && decTrimmed !== '000') {
+      return `${intFormatted},${decTrimmed} MAD`;
+    }
+  }
+  return `${intFormatted} MAD`;
 }
 
 function formatDate(dateString: string | undefined) {
