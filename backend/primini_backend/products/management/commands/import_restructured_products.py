@@ -1,5 +1,4 @@
 import json
-import re
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
@@ -7,6 +6,12 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from primini_backend.products.models import Category, Merchant, Product, PriceOffer
+from primini_backend.products.utils.import_utils import (
+    parse_price,
+    get_raw_price_text,
+    detect_currency,
+    extract_domain,
+)
 
 
 class Command(BaseCommand):
@@ -159,7 +164,7 @@ class Command(BaseCommand):
                 if isinstance(price_value, list):
                     parsed_prices = []
                     for price_str in price_value:
-                        parsed_price = self.parse_price(price_str)
+                        parsed_price = parse_price(price_str)
                         if parsed_price > 0:
                             parsed_prices.append(parsed_price)
                     
@@ -169,7 +174,7 @@ class Command(BaseCommand):
                     price = min(parsed_prices)  # Use lowest price
                 else:
                     # Price is a string
-                    price = self.parse_price(price_value)
+                    price = parse_price(price_value)
                 
                 if price <= 0:
                     continue  # Skip invalid prices
@@ -181,7 +186,7 @@ class Command(BaseCommand):
                 merchant, created = Merchant.objects.get_or_create(
                     name=merchant_name,
                     defaults={
-                        'website': self.extract_domain(offer_url),
+                        'website': extract_domain(offer_url),
                     }
                 )
                 
@@ -193,8 +198,8 @@ class Command(BaseCommand):
                     'price': price,
                     'stock_status': 'in_stock',  # Default to in stock
                     'url': offer_url,
-                    'currency': self.detect_currency(raw_price_value),
-                    'raw_price_text': self.get_raw_price_text(raw_price_value),
+                    'currency': detect_currency(raw_price_value),
+                    'raw_price_text': get_raw_price_text(raw_price_value),
                 }
 
                 offer, created = PriceOffer.objects.update_or_create(
@@ -208,60 +213,3 @@ class Command(BaseCommand):
             
             except Exception as e:
                 self.stdout.write(self.style.WARNING(f'Error importing offer for {merchant_name}: {e}'))
-
-    def parse_price(self, price_str):
-        """Parse price string and convert to float"""
-        if not price_str:
-            return 0.0
-        
-        # Remove currency symbols and spaces
-        price_clean = re.sub(r'[^\d.,]', '', str(price_str))
-        
-        # Handle different decimal separators
-        if ',' in price_clean and '.' in price_clean:
-            # Both comma and dot present - assume comma is thousands separator
-            price_clean = price_clean.replace(',', '')
-        elif ',' in price_clean:
-            # Only comma - could be decimal separator or thousands separator
-            # If more than 2 digits after comma, treat as thousands separator
-            parts = price_clean.split(',')
-            if len(parts) == 2 and len(parts[1]) > 2:
-                price_clean = price_clean.replace(',', '')
-            else:
-                price_clean = price_clean.replace(',', '.')
-        
-        try:
-            return float(price_clean)
-        except ValueError:
-            return 0.0
-
-    def extract_domain(self, url):
-        """Extract domain from URL"""
-        if not url:
-            return ''
-        
-        try:
-            from urllib.parse import urlparse
-            parsed = urlparse(url)
-            return f"{parsed.scheme}://{parsed.netloc}"
-        except:
-            return ''
-
-    def detect_currency(self, price_value):
-        """Attempt to detect currency from raw price information."""
-        text = self.get_raw_price_text(price_value).upper()
-        if '€' in text or 'EUR' in text:
-            return 'EUR'
-        if 'USD' in text or '$' in text:
-            return 'USD'
-        if 'GBP' in text or '£' in text:
-            return 'GBP'
-        if 'MAD' in text or 'DH' in text:
-            return 'MAD'
-        return 'MAD'
-
-    def get_raw_price_text(self, price_value):
-        """Return a string representation of the raw price value."""
-        if isinstance(price_value, list):
-            return ', '.join(str(v) for v in price_value)
-        return str(price_value or '')
