@@ -1,6 +1,6 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/product/[slug]/page": "app/product/[slug]/page.js",
-  "/search/page": "app/search/page.js",
-  "/icon.jpg/route": "app/icon.jpg/route.js"
+  "/categories/[slug]/page": "app/categories/[slug]/page.js",
+  "/product/[slug]/page": "app/product/[slug]/page.js"
 }

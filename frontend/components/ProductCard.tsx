@@ -106,7 +106,7 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
     const n = parseFloat(s);
     return isNaN(n) ? null : n;
   };
-  const numPrice = parsePrice(price);
+  const numPrice = (price);
 
   // Format price: space as thousand separator, comma for decimals (e.g. 1000 -> 1 000, 1234.5 -> 1 234,5)
   const formatPrice = (n: number): string => {
@@ -263,7 +263,7 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
         </div>
         <div className="mt-2 sm:mt-4 flex items-center justify-between">
           {numPrice !== null && !isNaN(numPrice) ? (
-            <p className="text-xs sm:text-sm font-semibold text-primary">{formatPrice(numPrice)} MAD</p>
+            <p className="text-xs sm:text-sm font-semibold text-primary">{(numPrice)} MAD</p>
           ) : (
             <p className="text-xs sm:text-sm text-slate-500">Prix en attente</p>
           )}
