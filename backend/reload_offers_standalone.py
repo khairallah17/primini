@@ -4,6 +4,7 @@ Creates products and offers if they don't exist. Uses sqlite3 only (no Django).
 Run: cd backend && python3 reload_offers_standalone.py
 """
 import json
+import os
 import re
 import sqlite3
 from pathlib import Path
@@ -96,10 +97,12 @@ def map_stock(s):
     return "in_stock"
 
 
-def main():
+def main(db_path=None):
     base = Path(__file__).resolve().parent
     data_dir = base.parent / "data"
-    db_path = base / "db.sqlite3"
+    if db_path is None:
+        db_path = Path(os.environ.get("RELOAD_DB_PATH", str(base / "db.sqlite3")))
+    db_path = Path(db_path)
 
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
