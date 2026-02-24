@@ -89,14 +89,14 @@ export default function RegisterScreen() {
     return (
       <div className="grid min-h-svh lg:grid-cols-2">
         <div className="flex flex-col gap-1 md:gap-4 bg-primary p-4 md:p-6">
-          <div className="flex justify-center gap-2 md:justify-start">
-            <Link href="/" className="flex items-center gap-2 font-medium">
+          <div className="flex justify-center items-center pt-2 pb-2">
+            <Link href="/" className="flex items-center justify-center">
               <Image
                 src="/images/avita-colors.jpg"
                 alt="Avita"
-                width={120}
-                height={40}
-                className="md:h-8 h-6 w-auto object-contain"
+                width={140}
+                height={48}
+                className="h-10 md:h-12 w-auto object-contain"
                 priority
                 unoptimized={true}
               />
@@ -156,14 +156,14 @@ export default function RegisterScreen() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 bg-primary p-4 md:p-6">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/" className="flex items-center gap-2 font-medium">
+        <div className="flex justify-center items-center pt-2 pb-2">
+          <Link href="/" className="flex items-center justify-center">
             <Image
               src="/images/avita-colors.jpg"
               alt="Avita"
-              width={120}
-              height={40}
-              className="h-8 w-auto object-contain"
+              width={140}
+              height={48}
+              className="h-10 md:h-12 w-auto object-contain"
               priority
               unoptimized={true}
             />

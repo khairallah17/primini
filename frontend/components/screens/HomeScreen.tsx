@@ -264,13 +264,24 @@ function getCategoryIcon(categoryName: string) {
 }
 
 function CategoryCard({ category }: { category: Category }) {
+  const categoryImage = getCategoryImage(category.name);
   return (
     <Link
       href={`/categories/${category.slug}`}
       className="group flex flex-col items-center justify-center md:p-4 p-3 transition-all hover:scale-105 flex-shrink-0"
     >
-      <div className="mb-3 text-primary group-hover:text-primary/80 transition-colors">
-        {getCategoryIcon(category.name)}
+      <div className="mb-3 text-primary group-hover:text-primary/80 transition-colors flex items-center justify-center">
+        {categoryImage ? (
+          <Image
+            src={categoryImage}
+            alt={category.name}
+            width={48}
+            height={48}
+            className="md:w-12 md:h-12 w-10 h-10 object-contain"
+          />
+        ) : (
+          getCategoryIcon(category.name)
+        )}
       </div>
       <h3 className="md:text-sm text-xs font-semibold text-slate-800 group-hover:text-primary transition-colors text-center whitespace-nowrap">
         {category.name}

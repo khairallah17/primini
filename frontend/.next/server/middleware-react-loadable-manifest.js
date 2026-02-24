@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app\\\\forgot-password\\\\page.tsx -> ../../components/screens/ForgotPasswordScreen\":{\"id\":\"app\\\\forgot-password\\\\page.tsx -> ../../components/screens/ForgotPasswordScreen\",\"files\":[\"static/chunks/_app-pages-browser_components_screens_ForgotPasswordScreen_tsx.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST="{}"
