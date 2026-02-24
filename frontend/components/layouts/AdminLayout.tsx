@@ -87,7 +87,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               className="flex items-center flex-1"
             >
               <Image
-                src="/images/avita-colors.png"
+                src="/images/avita-colors.jpg"
                 alt="Avita"
                 width={180}
                 height={60}

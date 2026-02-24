@@ -102,7 +102,7 @@ export default function VerifyOTPScreen() {
         <div className="flex justify-center gap-2 md:justify-start">
           <Link href="/" className="flex items-center gap-2 font-medium">
             <Image
-              src="/images/avita-colors.png"
+              src="/images/avita-colors.jpg"
               alt="Avita"
               width={120}
               height={40}

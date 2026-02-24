@@ -51,7 +51,7 @@ export default function HomeLoader({ isLoading, onComplete }: HomeLoaderProps) {
         {/* Logo */}
         <div className="flex flex-col items-center">
           <Image
-            src="/images/avita-colors.png"
+            src="/images/avita-colors.jpg"
             alt="Avita"
             width={320}
             height={320}
@@ -65,8 +65,11 @@ export default function HomeLoader({ isLoading, onComplete }: HomeLoaderProps) {
         <div className="w-64 md:w-80">
           <div className="h-2 overflow-hidden rounded-full bg-white/20">
             <div
-              className="h-full bg-secondary transition-all duration-300 ease-out"
-              style={{ width: `${Math.min(progress, 100)}%` }}
+              className="h-full transition-all duration-300 ease-out"
+              style={{
+                width: `${Math.min(progress, 100)}%`,
+                background: "linear-gradient(90deg, #009ef6 0%, #000751 100%)"
+              }}
             />
           </div>
         </div>

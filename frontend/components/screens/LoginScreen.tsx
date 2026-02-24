@@ -61,21 +61,21 @@ export default function LoginScreen() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 bg-primary p-4 md:p-6">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/" className="flex items-center gap-2 font-medium">
-            <Image
-              src="/images/avita-colors.png"
-              alt="Avita"
-              width={120}
-              height={40}
-              className="h-8 w-auto object-contain"
-              priority
-              unoptimized={true}
-            />
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-md space-y-4">
+        <div className="flex flex-1 flex-col items-center justify-center gap-8">
+          <div className="w-full max-w-md space-y-8">
+            <div className="flex justify-center">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/images/avita-colors.jpg"
+                  alt="Avita"
+                  width={120}
+                  height={40}
+                  className="h-12 w-auto object-contain"
+                  priority
+                  unoptimized={true}
+                />
+              </Link>
+            </div>
             <div className="space-y-2">
               <h1 className="text-2xl font-semibold text-white">Connexion</h1>
               <p className="text-sm text-white/80">Ravi de vous revoir sur Avita</p>

@@ -1,6 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/categories/[slug]/page": "app/categories/[slug]/page.js",
-  "/product/[slug]/page": "app/product/[slug]/page.js"
+  "/login/page": "app/login/page.js",
+  "/register/page": "app/register/page.js",
+  "/forgot-password/page": "app/forgot-password/page.js",
+  "/icon.png/route": "app/icon.png/route.js"
 }

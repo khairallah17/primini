@@ -1,8 +1,8 @@
 {
-  "app/product/[slug]/page.tsx -> ../../../components/screens/ProductDetailScreen": {
-    "id": "app/product/[slug]/page.tsx -> ../../../components/screens/ProductDetailScreen",
+  "app\\forgot-password\\page.tsx -> ../../components/screens/ForgotPasswordScreen": {
+    "id": "app\\forgot-password\\page.tsx -> ../../components/screens/ForgotPasswordScreen",
     "files": [
-      "static/chunks/_app-pages-browser_components_screens_ProductDetailScreen_tsx.js"
+      "static/chunks/_app-pages-browser_components_screens_ForgotPasswordScreen_tsx.js"
     ]
   }
 }

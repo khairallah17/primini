@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   description:
     'Comparez les prix des smartphones, TV, électroménagers et produits high-tech au Maroc sur Avita.',
   icons: {
-    icon: '/images/avita-colors.png',
-    shortcut: '/images/avita-colors.png',
-    apple: '/images/avita-colors.png',
+    icon: '/images/avita-colors.jpg',
+    shortcut: '/images/avita-colors.jpg',
+    apple: '/images/avita-colors.jpg',
   },
 };
 

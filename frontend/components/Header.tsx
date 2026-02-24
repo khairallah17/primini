@@ -144,9 +144,9 @@ export default function Header() {
             <Image
               src="/images/avita-logo-white-bg.png"
               alt="Avita"
-              width={320}
-              height={320}
-              className="md:h-6 h-6 w-auto object-contain"
+              width={112}
+              height={50}
+              className="md:h-9 h-9 w-auto object-contain"
               priority
               unoptimized={true}
             />
