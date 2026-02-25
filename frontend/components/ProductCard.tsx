@@ -262,7 +262,7 @@ export default function ProductCard({ product, onImageLoadStatus }: ProductCardP
           </div>
         </div>
         <div className="mt-2 sm:mt-4 flex items-center justify-between">
-          {numPrice !== null ? (
+          {numPrice !== null  ? (
             <p className="text-xs sm:text-sm font-semibold text-primary">{(numPrice)} MAD</p>
           ) : (
             <p className="text-xs sm:text-sm text-slate-500">Prix en attente</p>
