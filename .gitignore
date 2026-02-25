@@ -13,6 +13,8 @@ venv/
 dist/
 build/
 
+*.sqlite3
+
 # JSON DATA
 data/
 
