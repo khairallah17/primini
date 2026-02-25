@@ -110,14 +110,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       try {
         const authHeaders = getAuthHeader(tokens);
-        console.log('Fetching user on mount/update with headers:', authHeaders);
         
         const response = await api.get<User>('/auth/user/', {
           headers: authHeaders
         });
-        
-        console.log('User fetched successfully:', JSON.stringify(response.data, null, 2));
-        console.log('User role from API:', response.data.role);
+
         
         // Ensure role is set from API response
         const userData = {
