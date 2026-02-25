@@ -91,5 +91,31 @@
       "static/chunks/3642-fc849119992dcec1.js",
       "static/chunks/1790.c5c845412d7e4062.js"
     ]
+  },
+  "app/products/[slug]/edit/page.tsx -> @/components/screens/ProductFormScreen": {
+    "id": 5517,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/6648-1472009a1db05e53.js",
+      "static/chunks/5981-3ac3a679fc8aa094.js",
+      "static/chunks/2198.8700787857fcdaf6.js"
+    ]
+  },
+  "app/products/create/page.tsx -> @/components/screens/ProductFormScreen": {
+    "id": 5517,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/6648-1472009a1db05e53.js",
+      "static/chunks/5981-3ac3a679fc8aa094.js",
+      "static/chunks/2198.8700787857fcdaf6.js"
+    ]
+  },
+  "app/products/upload/page.tsx -> @/components/screens/CSVUploadScreen": {
+    "id": 5275,
+    "files": [
+      "static/chunks/8472-c5d6091e4f1f2de5.js",
+      "static/chunks/231-a4e9f556b8e481c5.js",
+      "static/chunks/5275.2f53ff7a772c19b7.js"
+    ]
   }
 }
