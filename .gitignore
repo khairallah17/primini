@@ -13,7 +13,18 @@ venv/
 dist/
 build/
 
-*.sqlite3
+# scripts
+create_sample_db.py
+populate_db_from_data.py
+apply_outliers_to_db.py
+apply_outliers_to_json.py
+create_db_from_json.py
+reload_offers_standalone.py
+reload_offers.py
+sync_backend_from_sample_db.py
+scan_price_outliers_json.py
+sync_merchant_images_to_new_db.py
+sync_productimages_to_new_db.py
 
 # JSON DATA
 data/
@@ -24,6 +35,8 @@ media/
 products/
 *.log
 *.pot
+*backup*
+primini_from_json.sqlite3
 
 # Node
 node_modules/

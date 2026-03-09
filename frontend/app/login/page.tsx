@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const LoginScreen = dynamic(() => import('../../components/screens/LoginScreen'), { ssr: false });
+import LoginScreen from '@/components/screens/LoginScreen';
 
 export default function Page() {
   return <LoginScreen />;

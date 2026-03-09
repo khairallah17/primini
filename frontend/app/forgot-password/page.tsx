@@ -1,8 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const ForgotPasswordScreen = dynamic(() => import('../../components/screens/ForgotPasswordScreen'), { ssr: false });
+import ForgotPasswordScreen from '@/components/screens/ForgotPasswordScreen';
 
 export default function Page() {
   return <ForgotPasswordScreen />;

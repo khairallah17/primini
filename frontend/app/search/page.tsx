@@ -1,10 +1,8 @@
-import dynamic from 'next/dynamic';
+import ProductListScreen from '@/components/screens/ProductListScreen';
 
 type PageProps = {
   searchParams: { q?: string };
 };
-
-const ProductListScreen = dynamic(() => import('../../components/screens/ProductListScreen'), { ssr: false });
 
 export default function Page({ searchParams }: PageProps) {
   const query = searchParams.q ?? '';

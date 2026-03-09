@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const CategoriesScreen = dynamic(() => import('../../components/screens/CategoriesScreen'), { ssr: false });
+import CategoriesScreen from '@/components/screens/CategoriesScreen';
 
 export default function Page() {
   return <CategoriesScreen />;

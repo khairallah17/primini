@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const UserManagementScreen = dynamic(() => import('../../../components/screens/UserManagementScreen'), { ssr: false });
+import UserManagementScreen from '@/components/screens/UserManagementScreen';
 
 export default function Page() {
   return <UserManagementScreen />;

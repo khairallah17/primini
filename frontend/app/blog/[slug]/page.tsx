@@ -1,9 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { notFound, useParams } from 'next/navigation';
-
-const BlogDetailScreen = dynamic(() => import('../../../components/screens/BlogDetailScreen'), { ssr: false });
+import BlogDetailScreen from '@/components/screens/BlogDetailScreen';
 
 export default function Page() {
   const params = useParams();

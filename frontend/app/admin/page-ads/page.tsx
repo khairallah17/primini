@@ -1,8 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const PageAdConfigScreen = dynamic(() => import('../../../components/screens/PageAdConfigScreen'), { ssr: false });
+import PageAdConfigScreen from '@/components/screens/PageAdConfigScreen';
 
 export default function Page() {
   return <PageAdConfigScreen />;

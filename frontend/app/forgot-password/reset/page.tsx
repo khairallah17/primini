@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const ResetPasswordScreen = dynamic(() => import('../../../components/screens/ResetPasswordScreen'), { ssr: false });
+import { Suspense } from 'react';
+import ResetPasswordScreen from '@/components/screens/ResetPasswordScreen';
 
 export default function Page() {
-  return <ResetPasswordScreen />;
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center">Chargement...</div>}>
+      <ResetPasswordScreen />
+    </Suspense>
+  );
 }
 

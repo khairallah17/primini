@@ -1,9 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { notFound, useParams } from 'next/navigation';
-
-const ProductDetailScreen = dynamic(() => import('../../../components/screens/ProductDetailScreen'), { ssr: false });
+import ProductDetailScreen from '@/components/screens/ProductDetailScreen';
 
 export default function Page() {
   const params = useParams();

@@ -1,8 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const BlogFormScreen = dynamic(() => import('../../../../components/screens/BlogFormScreen'), { ssr: false });
+import BlogFormScreen from '@/components/screens/BlogFormScreen';
 
 export default function Page() {
   return <BlogFormScreen />;

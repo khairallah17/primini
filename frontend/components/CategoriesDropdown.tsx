@@ -3,118 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-
-// Category data from the provided JSON
-const categoriesData = {
-  categories: [
-    {
-      name: 'Informatique',
-      subcategories: [
-        'Composants',
-        'Ordinateurs',
-        'Réseaux et connectivité',
-        'Périphériques',
-        'Stockages',
-        'Tablettes'
-      ]
-    },
-    {
-      name: 'Téléphonie',
-      subcategories: [
-        'Smartphones',
-        'Accessoires Téléphones',
-        'Téléphones Fixes',
-        'Smart Watches'
-      ]
-    },
-    {
-      name: 'Santé - Beauté',
-      subcategories: [
-        'Visage',
-        'Cheveux',
-        'Corps',
-        'Parfums',
-        'Dents',
-        'Maquillage',
-        'Parfum d\'ambiance',
-        'Santé',
-        'Hommes'
-      ]
-    },
-    {
-      name: 'Electroménager',
-      subcategories: [
-        'Aspirateurs',
-        'Machine à Laver',
-        'Sèche Linges',
-        'Lave vaisselles',
-        'Fours',
-        'Micro Ondes',
-        'Plaques de cuisson',
-        'Cuisinières',
-        'Hottes aspirantes',
-        'Climatiseurs',
-        'Chauffages',
-        'Chauffe Bain',
-        'Réfrigérateurs et congélateurs'
-      ]
-    },
-    {
-      name: 'Petit Electroménager',
-      subcategories: [
-        'Machines à café',
-        'Fer à Repasser',
-        'Blenders',
-        'Appareils de cuisson',
-        'Robot Pétrin et Robot de Cuisine Multifonction',
-        'Machine à Pain',
-        'Mixeurs',
-        'Batteurs',
-        'Moulins à café',
-        'Grille Pains',
-        'Gaufriers',
-        'Balances de cuisine',
-        'Bouilloires',
-        'Friteuses',
-        'Yaourtière',
-        'Défroisseurs à vapeur',
-        'Sorbetières',
-        'Centrifugeuses'
-      ]
-    },
-    {
-      name: 'Image & Son',
-      subcategories: [
-        'Écouteurs',
-        'Haut-parleurs',
-        'Systèmes home cinéma',
-        'Microphones',
-        'Téléviseurs',
-        'Projecteurs',
-        'Digital TV Boxes',
-        'TV Accessories',
-        'Casques'
-      ]
-    },
-    {
-      name: 'Photo & Caméra',
-      subcategories: [
-        'Appareils photos numériques',
-        'Objectifs pour appareil photo'
-      ]
-    }
-  ]
-};
-
-// Helper function to slugify category names
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
+import { getParentCategories, getCategorySubcategories } from '@/lib/categoryApi';
+import type { Category } from '@/lib/types';
 
 type CategoriesDropdownProps = {
   isOpen: boolean;
@@ -124,11 +14,53 @@ type CategoriesDropdownProps = {
 
 export default function CategoriesDropdown({ isOpen, onOpenChange, children }: CategoriesDropdownProps) {
   const [topPosition, setTopPosition] = useState(0);
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [parentCategories, setParentCategories] = useState<Category[]>([]);
+  const [hoveredCategorySlug, setHoveredCategorySlug] = useState<string | null>(null);
+  const [subcategoriesBySlug, setSubcategoriesBySlug] = useState<Record<string, Category[]>>({});
+  const [loadingSubcategories, setLoadingSubcategories] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch parent categories on mount
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const data = await getParentCategories();
+        const list = Array.isArray(data) ? data : data?.results ?? [];
+        setParentCategories(list);
+      } catch (err) {
+        console.warn('Failed to load categories', err);
+      }
+    }
+    void loadCategories();
+  }, []);
+
+  // Fetch subcategories when a parent is hovered
+  useEffect(() => {
+    if (!hoveredCategorySlug || subcategoriesBySlug[hoveredCategorySlug] !== undefined) return;
+    let cancelled = false;
+    setLoadingSubcategories(hoveredCategorySlug);
+    getCategorySubcategories(hoveredCategorySlug)
+      .then((subs) => {
+        if (!cancelled) {
+          setSubcategoriesBySlug((prev) => ({ ...prev, [hoveredCategorySlug]: subs }));
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('Failed to load subcategories', err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingSubcategories(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hoveredCategorySlug, subcategoriesBySlug]);
+
+  const hoveredCategory = parentCategories.find((c) => c.slug === hoveredCategorySlug);
+  const subcategories = hoveredCategorySlug ? subcategoriesBySlug[hoveredCategorySlug] ?? [] : [];
 
   // Calculate position under header
   useEffect(() => {
@@ -190,7 +122,7 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
     clearCloseTimeout();
     closeTimeoutRef.current = setTimeout(() => {
       onOpenChange(false);
-      setHoveredCategory(null);
+      setHoveredCategorySlug(null);
       closeTimeoutRef.current = null;
     }, 300); // 300ms delay
   };
@@ -271,26 +203,25 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
               {/* Left Side - Parent Categories (33%) */}
               <div className="w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-50">
                 <nav className="py-2 lg:py-4 max-h-[400px] lg:max-h-none overflow-y-auto lg:overflow-visible">
-                  {categoriesData.categories.map((category) => (
+                  {parentCategories.map((category) => (
                     <div
-                      key={category.name}
-                      onMouseEnter={() => setHoveredCategory(category.name)}
+                      key={category.slug}
+                      onMouseEnter={() => setHoveredCategorySlug(category.slug)}
                       onClickCapture={(e) => {
-                        // On mobile, expand/collapse only; prevent Link navigation so the row handles the tap
                         if (isMobile) {
                           e.preventDefault();
                           e.stopPropagation();
-                          setHoveredCategory((prev) => (prev === category.name ? null : category.name));
+                          setHoveredCategorySlug((prev) => (prev === category.slug ? null : category.slug));
                         }
                       }}
                       className={`px-4 sm:px-6 py-3 cursor-pointer transition-colors ${
-                        hoveredCategory === category.name
+                        hoveredCategorySlug === category.slug
                           ? 'bg-white lg:border-r-2 border-primary text-primary font-semibold'
                           : 'text-gray-700 hover:bg-white hover:text-primary'
                       }`}
                     >
                       <Link
-                        href={`/categories/${slugify(category.name)}`}
+                        href={`/categories/${category.slug}`}
                         onClick={(e) => {
                           if (isMobile) {
                             e.preventDefault();
@@ -308,26 +239,28 @@ export default function CategoriesDropdown({ isOpen, onOpenChange, children }: C
               </div>
 
               {/* Right Side - Subcategories (66%) */}
-              <div className="w-full lg:w-2/3 bg-white min-h-[300px] lg:min-h-0">
+              <div className="w-full lg:w-2/3 bg-white min-h-[300px] max-h-[400px] overflow-y-auto">
                 {hoveredCategory ? (
                   <div className="p-4 sm:p-6 lg:p-8">
                     <h3 className="text-base sm:text-lg lg:text-xl font-bold text-primary mb-4 sm:mb-6">
-                      {hoveredCategory}
+                      {hoveredCategory.name}
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
-                      {categoriesData.categories
-                        .find((cat) => cat.name === hoveredCategory)
-                        ?.subcategories.map((subcategory, index) => (
+                    {loadingSubcategories === hoveredCategorySlug ? (
+                      <p className="text-gray-400 text-sm">Chargement...</p>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+                        {subcategories.map((subcategory) => (
                           <Link
-                            key={`${hoveredCategory}-${subcategory}-${index}`}
-                            href={`/categories/${slugify(subcategory)}`}
+                            key={subcategory.slug}
+                            href={`/categories/${subcategory.slug}`}
                             onClick={() => onOpenChange(false)}
                             className="block px-3 sm:px-4 py-2 text-xs sm:text-sm lg:text-base text-gray-700 hover:text-primary hover:bg-gray-50 rounded-lg transition-all duration-200"
                           >
-                            {subcategory}
+                            {subcategory.name}
                           </Link>
                         ))}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full p-8">

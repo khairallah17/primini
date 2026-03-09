@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const MagicToolScreen = dynamic(() => import('../../components/screens/MagicToolScreen'), { ssr: false });
+import MagicToolScreen from '@/components/screens/MagicToolScreen';
 
 export default function Page() {
   return <MagicToolScreen />;

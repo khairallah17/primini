@@ -1,6 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const UserDetailsScreen = dynamic(() => import('../../../../components/screens/UserDetailsScreen'), { ssr: false });
+import UserDetailsScreen from '@/components/screens/UserDetailsScreen';
 
 export default function Page() {
   return <UserDetailsScreen />;
