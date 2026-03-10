@@ -6,9 +6,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../context/AuthContext';
 import {
-  createProduct,
-  updateProduct,
+  getProduct,
+  getProducts,
   getMerchants,
+  createProductWithFormData,
+  updateProductWithFormData,
   type ProductCreateData,
   type PriceOfferCreateData
 } from '../../lib/productApi';
@@ -364,17 +366,7 @@ function ProductFormContent() {
     
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/${productSlug}/`, {
-        headers: {
-          Authorization: `Token ${tokens.key}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to load product');
-      }
-      
-      const data: Product = await response.json();
+      const data = await getProduct(productSlug, tokens.key);
       setProduct(data);
       reset({
         name: data.name || '',
@@ -483,8 +475,7 @@ function ProductFormContent() {
     });
 
     // Load available tags from products
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/?page_size=1000`)
-      .then((res) => res.json())
+    getProducts(tokens?.key ?? null, { page_size: 1000 })
       .then((data) => {
         const allTags = new Set<string>();
         (data.results || []).forEach((p: Product) => {
@@ -500,7 +491,7 @@ function ProductFormContent() {
       })
       .catch((err) => {
         console.error('Failed to load tags', err);
-    });
+      });
 
     // Product loading is now handled in the Promise.all callback after merchants are loaded
   }, [tokens, isEdit, slug, loadProductData]);
@@ -624,36 +615,11 @@ function ProductFormContent() {
         }
       }
 
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/products/`;
-      const method = isEdit && slug ? 'PUT' : 'POST';
-      const url = isEdit && slug 
-        ? `${apiUrl}${slug}/`
-        : apiUrl;
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Token ${tokens.key}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Update error:', errorData);
-        // Display validation errors more clearly
-        if (errorData.offers) {
-          const offerErrors = errorData.offers.map((err: any, idx: number) => 
-            `Offre ${idx + 1}: ${JSON.stringify(err)}`
-          ).join('\n');
-          throw new Error(`Erreurs de validation des offres:\n${offerErrors}`);
-        }
-        throw new Error(errorData.detail || errorData.message || JSON.stringify(errorData) || 'Une erreur est survenue');
-      }
-
       if (isEdit && slug) {
+        await updateProductWithFormData(slug, formData, tokens.key);
         setSuccess('Produit mis à jour avec succès!');
       } else {
+        await createProductWithFormData(formData, tokens.key);
         setSuccess('Produit créé avec succès! En attente d\'approbation.');
       }
 
@@ -661,7 +627,19 @@ function ProductFormContent() {
         router.push('/');
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      const errorData = err.response?.data;
+      let message = err.message || 'Une erreur est survenue';
+      if (errorData) {
+        if (errorData.offers) {
+          const offerErrors = errorData.offers.map((e: any, idx: number) =>
+            `Offre ${idx + 1}: ${JSON.stringify(e)}`
+          ).join('\n');
+          message = `Erreurs de validation des offres:\n${offerErrors}`;
+        } else {
+          message = errorData.detail || errorData.message || message;
+        }
+      }
+      setError(message);
     } finally {
       setSubmitting(false);
     }

@@ -45,7 +45,51 @@ function getAuthHeader(token: string | null) {
   return { Authorization: `Token ${token}` };
 }
 
-// Create product
+// Get single product by slug
+export async function getProduct(slug: string, token: string | null): Promise<Product> {
+  const response = await api.get<Product>(`/products/${slug}/`, {
+    headers: getAuthHeader(token)
+  });
+  return response.data;
+}
+
+// Get products with arbitrary params (e.g. page_size for tag extraction)
+export async function getProducts(
+  token: string | null,
+  params?: Record<string, string | number>
+): Promise<PaginatedResponse<Product>> {
+  const response = await api.get<PaginatedResponse<Product>>('/products/', {
+    headers: getAuthHeader(token),
+    params: params ? { ...params } : undefined
+  });
+  return response.data;
+}
+
+// Create product with FormData (supports file uploads)
+export async function createProductWithFormData(
+  formData: FormData,
+  token: string | null
+): Promise<Product> {
+  const response = await api.post<Product>('/products/', formData, {
+    headers: getAuthHeader(token)
+    // Do not set Content-Type - axios sets multipart/form-data with boundary
+  });
+  return response.data;
+}
+
+// Update product with FormData (supports file uploads)
+export async function updateProductWithFormData(
+  slug: string,
+  formData: FormData,
+  token: string | null
+): Promise<Product> {
+  const response = await api.put<Product>(`/products/${slug}/`, formData, {
+    headers: getAuthHeader(token)
+  });
+  return response.data;
+}
+
+// Create product (JSON)
 export async function createProduct(
   data: ProductCreateData,
   token: string | null

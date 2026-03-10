@@ -1,9 +1,8 @@
 import axios from 'axios';
 
+const baseURL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api').replace(/\/+$/, '');
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api',
-  // withCredentials not needed for Token authentication
-  // Only needed if using session-based authentication
+  baseURL,
   withCredentials: true
 });
 
