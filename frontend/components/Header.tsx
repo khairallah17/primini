@@ -323,7 +323,7 @@ export default function Header() {
             <Link
               href="/deals"
               className={`whitespace-nowrap text-sm font-medium transition-colors ${
-                pathname.startsWith('/deals')
+                pathname?.startsWith('/deals')
                   ? 'text-primary border-b-2 border-secondary pb-1'
                   : 'text-primary/80 hover:text-primary'
               }`}
@@ -338,7 +338,7 @@ export default function Header() {
             >
               <button
                 className={`whitespace-nowrap text-sm font-medium transition-colors flex items-center gap-1 ${
-                  categoriesOpen || pathname.startsWith('/categories')
+                  categoriesOpen || pathname?.startsWith('/categories')
                     ? 'text-primary border-b-2 border-secondary pb-1'
                     : 'text-primary/80 hover:text-primary'
                 }`}
@@ -429,7 +429,7 @@ export default function Header() {
                   href="/deals"
                   onClick={() => setMobileSidebarOpen(false)}
                   className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                    pathname.startsWith('/deals')
+                    pathname?.startsWith('/deals')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
@@ -440,7 +440,7 @@ export default function Header() {
                   href="/magic-tool"
                   onClick={() => setMobileSidebarOpen(false)}
                   className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                    pathname.startsWith('/magic-tool')
+                    pathname?.startsWith('/magic-tool')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}

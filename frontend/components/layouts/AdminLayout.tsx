@@ -61,6 +61,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const isActive = (href: string) => {
+    if (!pathname) return false; // usePathname() returns null during SSR
     if (href === '/admin') {
       return pathname === '/admin';
     }
