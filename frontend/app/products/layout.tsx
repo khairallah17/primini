@@ -1,10 +1,22 @@
 'use client';
 
 import { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import AdminLayout from '../../components/layouts/AdminLayout';
+
+const AdminLayout = dynamic(
+  () => import('../../components/layouts/AdminLayout'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-gray-500">Chargement...</div>
+      </div>
+    ),
+  }
+);
 
 export default function ProductsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();

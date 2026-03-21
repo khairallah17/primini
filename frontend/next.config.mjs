@@ -20,8 +20,9 @@ function getApiUrlPattern() {
 const apiUrlPattern = getApiUrlPattern();
 
 const nextConfig = {
-  output: 'standalone',
   images: {
+    // Disable server-side image optimization to avoid WASM/sharp memory issues on low-RAM VPS
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -43,7 +44,6 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
-    unoptimized: false
   }
 };
 
