@@ -32,7 +32,6 @@ data/
 # Django
 staticfiles/
 media/
-products/
 *.log
 *.pot
 *backup*
