@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 
 const infoLinks = [
   { href: '/about', label: 'À propos' },
+  { href: '/blog', label: 'Blog' },
   { href: '/faq', label: 'FAQ' },
   { href: '/contact', label: 'Contact' },
   { href: '/terms', label: "Conditions d'utilisation" }

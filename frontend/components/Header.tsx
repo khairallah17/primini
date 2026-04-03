@@ -29,13 +29,6 @@ export default function Header() {
   // Check if header should be hidden (after all hooks are called)
   const shouldHideHeader = pathname?.startsWith('/admin') || pathname === '/register' || pathname === '/login';
 
-  const topNavLinks = [
-    { href: '/deals', label: 'Bons plans' },
-    { href: '/magic-tool', label: "L'outil magique" },
-    { href: '/categories', label: 'Catégories' },
-    { href: '/blog', label: 'Blog' }
-  ];
-
   // Fetch categories on mount
   useEffect(() => {
     async function loadCategories() {
@@ -355,6 +348,17 @@ export default function Header() {
                 </svg>
               </button>
             </CategoriesDropdown>
+
+            <Link
+              href="/blog"
+              className={`whitespace-nowrap text-sm font-medium transition-colors ${
+                pathname?.startsWith('/blog')
+                  ? 'text-primary border-b-2 border-secondary pb-1'
+                  : 'text-primary/80 hover:text-primary'
+              }`}
+            >
+              Blog
+            </Link>
           </nav>
         </div>
       </div>
@@ -446,6 +450,28 @@ export default function Header() {
                   }`}
                 >
                   L&apos;outil magique
+                </Link>
+                <Link
+                  href="/categories"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    pathname === '/categories' || pathname?.startsWith('/categories/')
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Catégories
+                </Link>
+                <Link
+                  href="/blog"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className={`block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    pathname?.startsWith('/blog')
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Blog
                 </Link>
               </div>
 
